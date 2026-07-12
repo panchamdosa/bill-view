@@ -11,11 +11,11 @@
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Forces Landscape orientation and fits everything into a single screen page layout when printing */
+        /* Forces Landscape orientation and dynamic clean filename when saving as PDF */
         @media print {
             @page {
                 size: landscape;
-                margin: 0.2in;
+                margin: 0.3in;
             }
             .no-print { display: none !important; }
             body { 
@@ -23,7 +23,7 @@
                 display: block !important;
             }
             .main-wrapper {
-                max-w-full !important;
+                max-width: 100% !important;
                 width: 100% !important;
                 padding: 0 !important;
             }
@@ -41,25 +41,25 @@
 </head>
 <body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-12">
 
-    <!-- Container scales horizontally beautifully for Landscape preview -->
-    <div class="max-w-5xl mx-auto px-4 pt-4 main-wrapper">
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden print-card">
+    <!-- Screen-friendly flexible wrapper -->
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 pt-4 main-wrapper">
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 overflow-hidden print-card">
             
             <!-- Header -->
-            <div class="bg-slate-900 p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="bg-slate-900 p-4 sm:p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="text-center sm:text-left">
-                    <h1 class="text-2xl font-black tracking-tight">Daily Cash Counter</h1>
-                    <p class="text-xs text-slate-400 font-medium">Petpooja & PhonePe Daily Report</p>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight">Daily Cash Counter</h1>
+                    <p class="text-[11px] sm:text-xs text-slate-400 font-medium">Petpooja & PhonePe Daily Report</p>
                 </div>
                 <!-- Date Section -->
-                <div class="flex items-center gap-3 bg-slate-800 px-4 py-2 rounded-xl">
+                <div class="flex items-center gap-2 bg-slate-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start">
                     <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Date:</span>
-                    <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer">
+                    <input type="date" id="txnDate" onchange="updatePDFTitle()" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer invert-0 dark:invert-0">
                 </div>
             </div>
 
-            <!-- Print friendly grid: Automatically turns into 3 side-by-side columns on landscape print -->
-            <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
+            <!-- Fully Responsive Grid: 1 Column on Mobile, 3 Columns on iPad/Laptop/Landscape -->
+            <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
                 
                 <!-- Column 1: Sales Inputs -->
                 <div class="space-y-4">
@@ -142,8 +142,8 @@
         </div>
 
         <!-- Stable Landscape Print Button -->
-        <div class="no-print mt-4 max-w-md mx-auto">
-            <button onclick="window.print()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
+        <div class="no-print mt-5 max-w-xs mx-auto">
+            <button onclick="handleNativePrint()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold p-3.5 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
@@ -159,6 +159,7 @@
             document.getElementById('txnDate').valueAsDate = new Date();
             initializeVaultRows();
             processSafeAccounting();
+            updatePDFTitle(); // Set initial file name
         });
 
         function initializeVaultRows() {
@@ -232,6 +233,22 @@
                 display.innerText = "₹0.00";
                 panel.classList.add("bg-slate-50", "border-slate-200", "text-slate-700");
             }
+        }
+
+        // Dynamically changes page title so the printed PDF filename matches exactly "daily_cash_counter_DD-MM-YYYY"
+        function updatePDFTitle() {
+            const dateInput = document.getElementById('txnDate').value;
+            if (dateInput) {
+                const [year, month, day] = dateInput.split('-');
+                document.title = `daily_cash_counter_${day}-${month}-${year}`;
+            } else {
+                document.title = "daily_cash_counter_report";
+            }
+        }
+
+        function handleNativePrint() {
+            updatePDFTitle();
+            window.print();
         }
     </script>
 </body>
