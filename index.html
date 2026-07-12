@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <!-- Section 3: Calculations (Simplified Words) -->
+                <!-- Section 3: Calculations -->
                 <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl space-y-4">
                     <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 3. Final Calculation
@@ -100,17 +100,10 @@
                     </div>
                 </div>
 
-                <!-- Section 4: DIFF Status Panel -->
-                <div id="variancePanel" class="p-5 rounded-2xl border flex flex-col items-center text-center transition-all duration-300">
-                    <span id="varianceLabel" class="text-xs font-bold uppercase tracking-widest">DIFF</span>
-                    <span id="varianceDisplay" class="text-3xl font-black mt-1.5 tracking-tight">₹0.00</span>
-                    <p id="systemReportLog" class="text-xs font-semibold mt-2 opacity-90"></p>
-                </div>
-
-                <!-- Error Message Alert Box -->
-                <div id="systemLockscreen" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-4 text-center space-y-1">
-                    <p class="text-xs font-bold text-rose-800 uppercase tracking-wider">Calculation Error</p>
-                    <p id="lockscreenMessage" class="text-xs text-rose-600 font-medium"></p>
+                <!-- Section 4: DIFF Color Panel Only -->
+                <div id="variancePanel" class="p-6 rounded-2xl border flex flex-col items-center text-center transition-all duration-300">
+                    <span class="text-xs font-bold uppercase tracking-widest">DIFF</span>
+                    <span id="varianceDisplay" class="text-4xl font-black mt-2 tracking-tight">₹0.00</span>
                 </div>
 
             </div>
@@ -163,28 +156,13 @@
         }
 
         function processSafeAccounting() {
-            const parseVal = (id) => Math.max(0, parseFloat(document.getElementById(id).value) || 0);
+            const parseVal = (id) => parseFloat(document.getElementById(id).value) || 0;
 
             const salesTotal = parseVal('petpoojaSales');
             const upiTotal = parseVal('phonepeUPI');
             const baseOpening = parseVal('yesterdayCash');
             const expensePayouts = parseVal('storeExpenses');
-
-            const lockscreen = document.getElementById('systemLockscreen');
-            const lockMsg = document.getElementById('lockscreenMessage');
             const cashDisplayRow = document.getElementById('derivedCashSales');
-
-            // PhonePe shouldn't be bigger than Petpooja sales
-            if (upiTotal > salesTotal) {
-                lockscreen.classList.remove('hidden');
-                lockMsg.innerText = `PhonePe UPI amount (₹${upiTotal.toFixed(2)}) cannot be more than Petpooja Total Sales (₹${salesTotal.toFixed(2)}). Please check numbers.`;
-                cashDisplayRow.innerText = "Error";
-                cashDisplayRow.className = "text-xl font-black text-rose-600";
-                return;
-            } else {
-                lockscreen.classList.add('hidden');
-                cashDisplayRow.className = "text-xl font-black text-emerald-700";
-            }
 
             // Cash Sales Calculation
             const accurateCashSales = salesTotal - upiTotal;
@@ -193,7 +171,7 @@
             // Notes Calculation
             let totalVaultCashMeasured = 0;
             notesLookup.forEach(denom => {
-                const count = Math.max(0, parseInt(document.getElementById(`input-${denom}`).value) || 0);
+                const count = parseInt(document.getElementById(`input-${denom}`).value) || 0;
                 const combinedRowValue = count * denom;
                 document.getElementById(`output-${denom}`).innerText = "₹" + combinedRowValue.toLocaleString('en-IN', { minimumFractionDigits: 2 });
                 totalVaultCashMeasured += combinedRowValue;
@@ -204,7 +182,7 @@
             const absoluteExpectedBalance = accurateCashSales + baseOpening - expensePayouts;
             document.getElementById('targetExpectedCash').innerText = "₹" + absoluteExpectedBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-            // DIFF Calculation
+            // DIFF Calculation (Expected minus Physical)
             const globalDiscrepancy = absoluteExpectedBalance - totalVaultCashMeasured;
             
             renderUXVarianceState(globalDiscrepancy);
@@ -212,28 +190,22 @@
 
         function renderUXVarianceState(discrepancy) {
             const panel = document.getElementById('variancePanel');
-            const label = document.getElementById('varianceLabel');
             const display = document.getElementById('varianceDisplay');
-            const log = document.getElementById('systemReportLog');
 
-            panel.className = "p-5 rounded-2xl border flex flex-col items-center text-center transition-all duration-300";
-            const displayAmt = "₹" + Math.abs(discrepancy).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            panel.className = "p-6 rounded-2xl border flex flex-col items-center text-center transition-all duration-300";
 
-            if (Math.abs(discrepancy) < 0.01) {
-                label.innerText = "DIFF (Balanced)";
-                display.innerText = "₹0.00";
-                log.innerText = "Perfect! Cash box is correct.";
-                panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-900");
+            if (discrepancy < 0) {
+                // Negative value -> Extra Cash (Green)
+                display.innerText = "-" + "₹" + Math.abs(discrepancy).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-700");
             } else if (discrepancy > 0) {
-                label.innerText = "DIFF (Shortage)";
-                display.innerText = displayAmt;
-                log.innerText = "Cash is short in the box.";
-                panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-900");
+                // Positive value -> Shortage (Red)
+                display.innerText = "+" + "₹" + discrepancy.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-600");
             } else {
-                label.innerText = "DIFF (Extra Cash)";
-                display.innerText = displayAmt;
-                log.innerText = "Extra cash found in the box.";
-                panel.classList.add("bg-blue-50", "border-blue-200", "text-blue-900");
+                // Perfect Balance -> Neutral / Green
+                display.innerText = "₹0.00";
+                panel.classList.add("bg-slate-50", "border-slate-200", "text-slate-700");
             }
         }
 
