@@ -4,19 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Daily Cash Counter</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         input[type="number"] { -moz-appearance: textfield; }
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .no-export { data-html2canvas-ignore: true; }
+        
+        /* This hides the button and background colors nicely when printing/saving PDF */
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: white !important; }
+            .print-card { border: none !important; shadow: none !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-12">
 
-    <div class="max-w-md mx-auto px-4 pt-4" id="accounting-app">
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden" id="pdf-container">
+    <div class="max-w-md mx-auto px-4 pt-4">
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden print-card">
             
             <!-- Header -->
             <div class="bg-slate-900 p-6 text-white text-center">
@@ -27,7 +33,7 @@
             <!-- Date -->
             <div class="p-5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Date</span>
-                <input type="date" id="txnDate" class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-xs focus:outline-hidden">
+                <input type="date" id="txnDate" class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-700 focus:outline-hidden">
             </div>
 
             <div class="p-6 space-y-6">
@@ -85,7 +91,7 @@
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Yesterday Cash Box Collection</label>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Yesterday Cash Box</label>
                             <input type="number" id="yesterdayCash" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden">
                         </div>
                         <div class="relative">
@@ -100,7 +106,7 @@
                     </div>
                 </div>
 
-                <!-- Section 4: DIFF Color Panel Only -->
+                <!-- Section 4: DIFF Color Panel -->
                 <div id="variancePanel" class="p-6 rounded-2xl border flex flex-col items-center text-center transition-all duration-300">
                     <span class="text-xs font-bold uppercase tracking-widest">DIFF</span>
                     <span id="varianceDisplay" class="text-4xl font-black mt-2 tracking-tight">₹0.00</span>
@@ -109,13 +115,13 @@
             </div>
         </div>
 
-        <!-- Download Button -->
-        <div class="no-export mt-4">
-            <button onclick="executePDFExport()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
+        <!-- Stable Native Download Button -->
+        <div class="no-print mt-4">
+            <button onclick="window.print()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <span class="tracking-wide text-sm">Download Shareable PDF Report</span>
+                <span class="tracking-wide text-sm">Save Report as PDF</span>
             </button>
         </div>
     </div>
@@ -164,11 +170,9 @@
             const expensePayouts = parseVal('storeExpenses');
             const cashDisplayRow = document.getElementById('derivedCashSales');
 
-            // Cash Sales Calculation
             const accurateCashSales = salesTotal - upiTotal;
             cashDisplayRow.innerText = "₹" + accurateCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-            // Notes Calculation
             let totalVaultCashMeasured = 0;
             notesLookup.forEach(denom => {
                 const count = parseInt(document.getElementById(`input-${denom}`).value) || 0;
@@ -178,11 +182,9 @@
             });
             document.getElementById('totalPhysicalCount').innerText = "₹" + totalVaultCashMeasured.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-            // Expected Cash Box Total Calculation
             const absoluteExpectedBalance = accurateCashSales + baseOpening - expensePayouts;
             document.getElementById('targetExpectedCash').innerText = "₹" + absoluteExpectedBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-            // DIFF Calculation (Expected minus Physical)
             const globalDiscrepancy = absoluteExpectedBalance - totalVaultCashMeasured;
             
             renderUXVarianceState(globalDiscrepancy);
@@ -195,33 +197,15 @@
             panel.className = "p-6 rounded-2xl border flex flex-col items-center text-center transition-all duration-300";
 
             if (discrepancy < 0) {
-                // Negative value -> Extra Cash (Green)
                 display.innerText = "-" + "₹" + Math.abs(discrepancy).toLocaleString('en-IN', { minimumFractionDigits: 2 });
                 panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-700");
             } else if (discrepancy > 0) {
-                // Positive value -> Shortage (Red)
                 display.innerText = "+" + "₹" + discrepancy.toLocaleString('en-IN', { minimumFractionDigits: 2 });
                 panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-600");
             } else {
-                // Perfect Balance -> Neutral / Green
                 display.innerText = "₹0.00";
                 panel.classList.add("bg-slate-50", "border-slate-200", "text-slate-700");
             }
-        }
-
-        function executePDFExport() {
-            const targetElement = document.getElementById('pdf-container');
-            const currentSelectedDate = document.getElementById('txnDate').value || 'Snapshot';
-
-            const configurations = {
-                margin: [0.3, 0.3, 0.3, 0.3],
-                filename: `Cash_Report_${currentSelectedDate}.pdf`,
-                image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-
-            html2pdf().set(configurations).from(targetElement).save();
         }
     </script>
 </body>
