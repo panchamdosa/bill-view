@@ -11,35 +11,59 @@
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* This hides the button and background colors nicely when printing/saving PDF */
+        /* Forces Landscape orientation and fits everything into a single screen page layout when printing */
         @media print {
+            @page {
+                size: landscape;
+                margin: 0.2in;
+            }
             .no-print { display: none !important; }
-            body { background-color: white !important; }
-            .print-card { border: none !important; shadow: none !important; }
+            body { 
+                background-color: white !important; 
+                display: block !important;
+            }
+            .main-wrapper {
+                max-w-full !important;
+                width: 100% !important;
+                padding: 0 !important;
+            }
+            .print-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 1rem !important;
+            }
+            .print-card { 
+                border: none !important; 
+                box-shadow: none !important; 
+            }
         }
     </style>
 </head>
 <body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-12">
 
-    <div class="max-w-md mx-auto px-4 pt-4">
+    <!-- Container scales horizontally beautifully for Landscape preview -->
+    <div class="max-w-5xl mx-auto px-4 pt-4 main-wrapper">
         <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden print-card">
             
             <!-- Header -->
-            <div class="bg-slate-900 p-6 text-white text-center">
-                <h1 class="text-2xl font-black tracking-tight">Daily Cash Counter</h1>
-                <p class="text-xs text-slate-400 mt-1 font-medium">Petpooja & PhonePe Daily Report</p>
+            <div class="bg-slate-900 p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-2">
+                <div class="text-center sm:text-left">
+                    <h1 class="text-2xl font-black tracking-tight">Daily Cash Counter</h1>
+                    <p class="text-xs text-slate-400 font-medium">Petpooja & PhonePe Daily Report</p>
+                </div>
+                <!-- Date Section -->
+                <div class="flex items-center gap-3 bg-slate-800 px-4 py-2 rounded-xl">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Date:</span>
+                    <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer">
+                </div>
             </div>
 
-            <!-- Date -->
-            <div class="p-5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Date</span>
-                <input type="date" id="txnDate" class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-700 focus:outline-hidden">
-            </div>
-
-            <div class="p-6 space-y-6">
-                <!-- Section 1: Sales Inputs -->
-                <div>
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+            <!-- Print friendly grid: Automatically turns into 3 side-by-side columns on landscape print -->
+            <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
+                
+                <!-- Column 1: Sales Inputs -->
+                <div class="space-y-4">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 1. Sales & Payments
                     </h2>
                     
@@ -59,69 +83,71 @@
                         <!-- Auto Calculated Cash Sales -->
                         <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center shadow-xs">
                             <div>
-                                <p class="text-xs font-bold text-emerald-800">Auto Calculated Cash Sales:</p>
-                                <p class="text-[10px] text-emerald-600/80 mt-0.5">(Petpooja minus PhonePe)</p>
+                                <p class="text-xs font-bold text-emerald-800">Auto Cash Sales:</p>
+                                <p class="text-[10px] text-emerald-600/80">(Sales - PhonePe)</p>
                             </div>
-                            <span id="derivedCashSales" class="text-xl font-black text-emerald-700">₹0.00</span>
+                            <span id="derivedCashSales" class="text-lg font-black text-emerald-700">₹0.00</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section 2: Physical Cash Count -->
+                <!-- Column 2: Physical Cash Count -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 2. Physical Cash Count
                     </h2>
 
                     <div class="border border-slate-100 rounded-2xl overflow-hidden shadow-xs divide-y divide-slate-100" id="denomTable">
-                        <!-- Rows render here -->
+                        <!-- Rows render here dynamically -->
                     </div>
 
-                    <div class="mt-3 bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center shadow-md">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Physical Cash:</span>
-                        <span id="totalPhysicalCount" class="text-xl font-mono font-black text-yellow-400">₹0.00</span>
+                    <div class="mt-3 bg-slate-900 text-white p-3 rounded-xl flex justify-between items-center shadow-md">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Cash:</span>
+                        <span id="totalPhysicalCount" class="text-lg font-mono font-black text-yellow-400">₹0.00</span>
                     </div>
                 </div>
 
-                <!-- Section 3: Calculations -->
-                <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl space-y-4">
-                    <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 3. Final Calculation
+                <!-- Column 3: Calculations & Balanced Diff -->
+                <div class="space-y-4">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 3. Calculation & Status
                     </h2>
                     
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Yesterday Cash Box</label>
-                            <input type="number" id="yesterdayCash" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden">
+                    <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Yesterday Cash</label>
+                                <input type="number" id="yesterdayCash" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Expense</label>
+                                <input type="number" id="storeExpenses" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-rose-600 outline-hidden text-sm">
+                            </div>
                         </div>
-                        <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Expense</label>
-                            <input type="number" id="storeExpenses" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-rose-600 outline-hidden">
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Expected Cash:</span>
+                            <span id="targetExpectedCash" class="text-sm font-extrabold text-slate-900">₹0.00</span>
                         </div>
                     </div>
 
-                    <div class="pt-3 border-t border-slate-200/60 flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Total Expected Cash:</span>
-                        <span id="targetExpectedCash" class="text-base font-extrabold text-slate-900">₹0.00</span>
+                    <!-- DIFF Output Box -->
+                    <div id="variancePanel" class="p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[110px] transition-all duration-300">
+                        <span class="text-xs font-bold uppercase tracking-widest">DIFF</span>
+                        <span id="varianceDisplay" class="text-3xl font-black mt-2 tracking-tight">₹0.00</span>
                     </div>
-                </div>
-
-                <!-- Section 4: DIFF Color Panel -->
-                <div id="variancePanel" class="p-6 rounded-2xl border flex flex-col items-center text-center transition-all duration-300">
-                    <span class="text-xs font-bold uppercase tracking-widest">DIFF</span>
-                    <span id="varianceDisplay" class="text-4xl font-black mt-2 tracking-tight">₹0.00</span>
                 </div>
 
             </div>
         </div>
 
-        <!-- Stable Native Download Button -->
-        <div class="no-print mt-4">
+        <!-- Stable Landscape Print Button -->
+        <div class="no-print mt-4 max-w-md mx-auto">
             <button onclick="window.print()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <span class="tracking-wide text-sm">Save Report as PDF</span>
+                <span class="tracking-wide text-sm">Save Landscape PDF Report</span>
             </button>
         </div>
     </div>
@@ -141,15 +167,15 @@
             
             notesLookup.forEach(val => {
                 const wrapper = document.createElement('div');
-                wrapper.className = "flex items-center justify-between bg-slate-50/50 p-3 hover:bg-slate-50";
+                wrapper.className = "flex items-center justify-between bg-slate-50/50 px-3 py-1.5 hover:bg-slate-50";
                 wrapper.innerHTML = `
-                    <span class="w-20 text-xs font-black text-slate-600 tracking-wider">₹ ${val}</span>
-                    <div class="flex items-center gap-2">
-                        <span class="text-slate-400 text-xs font-bold">×</span>
+                    <span class="w-14 text-xs font-black text-slate-600 tracking-wider">₹ ${val}</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-slate-400 text-[10px] font-bold">×</span>
                         <input type="number" id="input-${val}" value="0" min="0" onkeydown="guardInputMask(event)" oninput="processSafeAccounting()" 
-                               class="w-20 text-center p-1.5 font-bold bg-white border border-slate-200 rounded-lg text-slate-800 focus:border-blue-500 text-sm shadow-xs">
+                               class="w-14 text-center p-1 font-bold bg-white border border-slate-200 rounded-md text-slate-800 focus:border-blue-500 text-xs shadow-xs">
                     </div>
-                    <span id="output-${val}" class="w-28 text-right font-mono font-bold text-slate-600 text-sm">₹0.00</span>
+                    <span id="output-${val}" class="w-24 text-right font-mono font-bold text-slate-600 text-xs">₹0.00</span>
                 `;
                 container.appendChild(wrapper);
             });
@@ -194,7 +220,7 @@
             const panel = document.getElementById('variancePanel');
             const display = document.getElementById('varianceDisplay');
 
-            panel.className = "p-6 rounded-2xl border flex flex-col items-center text-center transition-all duration-300";
+            panel.className = "p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[110px] transition-all duration-300";
 
             if (discrepancy < 0) {
                 display.innerText = "-" + "₹" + Math.abs(discrepancy).toLocaleString('en-IN', { minimumFractionDigits: 2 });
