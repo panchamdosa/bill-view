@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Daily Cash Reconciliation Hub</title>
-    <!-- Tailwind CSS Engine -->
+    <title>Daily Cash Counter</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- html2pdf.js Bundle -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         input[type="number"] { -moz-appearance: textfield; }
@@ -18,111 +16,107 @@
 <body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-12">
 
     <div class="max-w-md mx-auto px-4 pt-4" id="accounting-app">
-        <!-- Main Card Container -->
         <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden" id="pdf-container">
             
-            <!-- App Header Header Branding -->
-            <div class="bg-linear-to-r from-slate-900 to-blue-950 p-6 text-white text-center">
-                <span class="text-xs font-bold tracking-widest text-blue-400 uppercase bg-blue-950/60 px-3 py-1 rounded-full">Operations Desk</span>
-                <h1 class="text-2xl font-black mt-2 tracking-tight">Cash Reconciliation</h1>
-                <p class="text-xs text-slate-400 mt-1 font-medium">Petpooja POS & PhonePe Gateway Terminal</p>
+            <!-- Header -->
+            <div class="bg-slate-900 p-6 text-white text-center">
+                <h1 class="text-2xl font-black tracking-tight">Daily Cash Counter</h1>
+                <p class="text-xs text-slate-400 mt-1 font-medium">Petpooja & PhonePe Daily Report</p>
             </div>
 
-            <!-- Context Info (Date Selector) -->
+            <!-- Date -->
             <div class="p-5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Accounting Window</span>
-                <input type="date" id="txnDate" class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-xs focus:border-blue-500 focus:outline-hidden">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Date</span>
+                <input type="date" id="txnDate" class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-xs focus:outline-hidden">
             </div>
 
             <div class="p-6 space-y-6">
-                <!-- Section 1: Sales Inputs & Verification Core -->
+                <!-- Section 1: Sales Inputs -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 1. POS & Payment Gateway Inputs
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 1. Sales & Payments
                     </h2>
                     
                     <div class="space-y-3">
                         <div class="relative">
                             <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Today Sales (Petpooja)</label>
                             <span class="absolute left-3 top-3.5 font-bold text-slate-400 text-lg">₹</span>
-                            <input type="number" id="petpoojaSales" value="0" step="any" min="0" oninput="processSafeAccounting()" class="w-full pl-7 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-slate-50/30 focus:bg-white focus:border-blue-500 focus:ring-3 focus:ring-blue-100 outline-hidden transition-all">
+                            <input type="number" id="petpoojaSales" value="0" oninput="processSafeAccounting()" class="w-full pl-7 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-slate-50/30 focus:bg-white focus:border-blue-500 outline-hidden transition-all">
                         </div>
 
                         <div class="relative">
-                            <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] font-bold text-purple-600 uppercase tracking-wider">UPI Collections (PhonePe)</label>
+                            <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] font-bold text-purple-600 uppercase tracking-wider">UPI Payment (PhonePe)</label>
                             <span class="absolute left-3 top-3.5 font-bold text-purple-400 text-lg">₹</span>
-                            <input type="number" id="phonepeUPI" value="0" step="any" min="0" oninput="processSafeAccounting()" class="w-full pl-7 pr-4 py-3 border border-purple-200 rounded-xl font-bold text-lg text-purple-900 bg-purple-50/10 focus:bg-white focus:border-purple-500 focus:ring-3 focus:ring-purple-100 outline-hidden transition-all">
+                            <input type="number" id="phonepeUPI" value="0" oninput="processSafeAccounting()" class="w-full pl-7 pr-4 py-3 border border-purple-200 rounded-xl font-bold text-lg text-purple-900 bg-purple-50/10 focus:bg-white focus:border-purple-500 outline-hidden transition-all">
                         </div>
 
-                        <!-- System Subtraction Lock Output -->
-                        <div class="bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center shadow-xs">
+                        <!-- Auto Calculated Cash Sales -->
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center shadow-xs">
                             <div>
-                                <p class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Derived Book Cash Inflow</p>
-                                <p class="text-xs text-emerald-600/80 mt-0.5">(Petpooja Gross minus PhonePe UPI)</p>
+                                <p class="text-xs font-bold text-emerald-800">Auto Calculated Cash Sales:</p>
+                                <p class="text-[10px] text-emerald-600/80 mt-0.5">(Petpooja minus PhonePe)</p>
                             </div>
                             <span id="derivedCashSales" class="text-xl font-black text-emerald-700">₹0.00</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section 2: Currency Vault Configuration -->
+                <!-- Section 2: Physical Cash Count -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 2. Physical Vault Cash Counter
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 2. Physical Cash Count
                     </h2>
 
-                    <!-- Denomination Rows Layout -->
                     <div class="border border-slate-100 rounded-2xl overflow-hidden shadow-xs divide-y divide-slate-100" id="denomTable">
-                        <!-- Item Macro Function Renders Here dynamically -->
+                        <!-- Rows render here -->
                     </div>
 
-                    <!-- Computed Total Box -->
                     <div class="mt-3 bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center shadow-md">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Measured Cash:</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Physical Cash:</span>
                         <span id="totalPhysicalCount" class="text-xl font-mono font-black text-yellow-400">₹0.00</span>
                     </div>
                 </div>
 
-                <!-- Section 3: Safe Math Controls -->
+                <!-- Section 3: Calculations (Simplified Words) -->
                 <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl space-y-4">
                     <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 3. Book Reconciliation Matrix
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 3. Final Calculation
                     </h2>
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Opening Safe Cash</label>
-                            <input type="number" id="yesterdayCash" value="0" step="any" min="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden focus:border-slate-400">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Yesterday Cash Box Collection</label>
+                            <input type="number" id="yesterdayCash" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden">
                         </div>
                         <div class="relative">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Store Cash Expenses</label>
-                            <input type="number" id="storeExpenses" value="0" step="any" min="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-rose-600 outline-hidden focus:border-rose-400">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Expense</label>
+                            <input type="number" id="storeExpenses" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-rose-600 outline-hidden">
                         </div>
                     </div>
 
                     <div class="pt-3 border-t border-slate-200/60 flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Target Vault Expectation:</span>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Total Expected Cash:</span>
                         <span id="targetExpectedCash" class="text-base font-extrabold text-slate-900">₹0.00</span>
                     </div>
                 </div>
 
-                <!-- Section 4: Variance Interface Panel -->
+                <!-- Section 4: DIFF Status Panel -->
                 <div id="variancePanel" class="p-5 rounded-2xl border flex flex-col items-center text-center transition-all duration-300">
-                    <span id="varianceLabel" class="text-xs font-bold uppercase tracking-widest">System Variance Evaluation</span>
+                    <span id="varianceLabel" class="text-xs font-bold uppercase tracking-widest">DIFF</span>
                     <span id="varianceDisplay" class="text-3xl font-black mt-1.5 tracking-tight">₹0.00</span>
                     <p id="systemReportLog" class="text-xs font-semibold mt-2 opacity-90"></p>
                 </div>
 
-                <!-- Internal Hidden Exception Overlay Area -->
+                <!-- Error Message Alert Box -->
                 <div id="systemLockscreen" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-4 text-center space-y-1">
-                    <p class="text-xs font-bold text-rose-800 uppercase tracking-wider">Gateway Processing Conflict Error</p>
+                    <p class="text-xs font-bold text-rose-800 uppercase tracking-wider">Calculation Error</p>
                     <p id="lockscreenMessage" class="text-xs text-rose-600 font-medium"></p>
                 </div>
 
             </div>
         </div>
 
-        <!-- System Controls Trigger (Excluded from PDF print) -->
+        <!-- Download Button -->
         <div class="no-export mt-4">
             <button onclick="executePDFExport()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,32 +127,28 @@
         </div>
     </div>
 
-    <!-- Application Script Execution Layer -->
     <script>
-        // Currency note configurations
         const notesLookup = [500, 200, 100, 50, 20, 10, 5];
 
-        // Self-initializing runtime loop
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('txnDate').valueAsDate = new Date();
             initializeVaultRows();
             processSafeAccounting();
         });
 
-        // Safe Dynamic Layout Builder for Denominations
         function initializeVaultRows() {
             const container = document.getElementById('denomTable');
             container.innerHTML = '';
             
             notesLookup.forEach(val => {
                 const wrapper = document.createElement('div');
-                wrapper.className = "flex items-center justify-between bg-slate-50/50 p-3 transition-colors hover:bg-slate-50";
+                wrapper.className = "flex items-center justify-between bg-slate-50/50 p-3 hover:bg-slate-50";
                 wrapper.innerHTML = `
                     <span class="w-20 text-xs font-black text-slate-600 tracking-wider">₹ ${val}</span>
                     <div class="flex items-center gap-2">
                         <span class="text-slate-400 text-xs font-bold">×</span>
                         <input type="number" id="input-${val}" value="0" min="0" onkeydown="guardInputMask(event)" oninput="processSafeAccounting()" 
-                               class="w-20 text-center p-1.5 font-bold bg-white border border-slate-200 rounded-lg text-slate-800 focus:border-blue-500 focus:outline-hidden text-sm shadow-xs">
+                               class="w-20 text-center p-1.5 font-bold bg-white border border-slate-200 rounded-lg text-slate-800 focus:border-blue-500 text-sm shadow-xs">
                     </div>
                     <span id="output-${val}" class="w-28 text-right font-mono font-bold text-slate-600 text-sm">₹0.00</span>
                 `;
@@ -166,17 +156,13 @@
             });
         }
 
-        // Low-Level Input Exception Interceptor Guardrail
         function guardInputMask(e) {
-            // Block negative signs, floating dots for counts, or exponent notations
             if (e.key === '-' || e.key === '.' || e.key === 'e' || e.key === 'E') {
                 e.preventDefault();
             }
         }
 
-        // Central Processing Engine
         function processSafeAccounting() {
-            // Pure Float Parsing Wrappers to strip away toxic mutations
             const parseVal = (id) => Math.max(0, parseFloat(document.getElementById(id).value) || 0);
 
             const salesTotal = parseVal('petpoojaSales');
@@ -188,23 +174,23 @@
             const lockMsg = document.getElementById('lockscreenMessage');
             const cashDisplayRow = document.getElementById('derivedCashSales');
 
-            // --- Exception Handling: Logic Deficit Protection ---
+            // PhonePe shouldn't be bigger than Petpooja sales
             if (upiTotal > salesTotal) {
                 lockscreen.classList.remove('hidden');
-                lockMsg.innerText = `PhonePe volume (₹${upiTotal.toFixed(2)}) is higher than gross Petpooja transactions (₹${salesTotal.toFixed(2)}). Verification frozen until fixed.`;
+                lockMsg.innerText = `PhonePe UPI amount (₹${upiTotal.toFixed(2)}) cannot be more than Petpooja Total Sales (₹${salesTotal.toFixed(2)}). Please check numbers.`;
                 cashDisplayRow.innerText = "Error";
                 cashDisplayRow.className = "text-xl font-black text-rose-600";
-                return; // Cease downline calculations
+                return;
             } else {
                 lockscreen.classList.add('hidden');
                 cashDisplayRow.className = "text-xl font-black text-emerald-700";
             }
 
-            // Execute Derived Cash Inflow Formula
+            // Cash Sales Calculation
             const accurateCashSales = salesTotal - upiTotal;
             cashDisplayRow.innerText = "₹" + accurateCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-            // Processing Denominations
+            // Notes Calculation
             let totalVaultCashMeasured = 0;
             notesLookup.forEach(denom => {
                 const count = Math.max(0, parseInt(document.getElementById(`input-${denom}`).value) || 0);
@@ -214,55 +200,50 @@
             });
             document.getElementById('totalPhysicalCount').innerText = "₹" + totalVaultCashMeasured.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-            // Expected Book Safe Balance Formula
+            // Expected Cash Box Total Calculation
             const absoluteExpectedBalance = accurateCashSales + baseOpening - expensePayouts;
             document.getElementById('targetExpectedCash').innerText = "₹" + absoluteExpectedBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-            // Compute Final System Variance (DIFF)
+            // DIFF Calculation
             const globalDiscrepancy = absoluteExpectedBalance - totalVaultCashMeasured;
             
             renderUXVarianceState(globalDiscrepancy);
         }
 
-        // High Fidelity UI/UX Adaptive Rendering Unit
         function renderUXVarianceState(discrepancy) {
             const panel = document.getElementById('variancePanel');
             const label = document.getElementById('varianceLabel');
             const display = document.getElementById('varianceDisplay');
             const log = document.getElementById('systemReportLog');
 
-            // Clear absolute state mappings
             panel.className = "p-5 rounded-2xl border flex flex-col items-center text-center transition-all duration-300";
-
-            // Normalization down to absolute currency metrics
             const displayAmt = "₹" + Math.abs(discrepancy).toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
             if (Math.abs(discrepancy) < 0.01) {
-                label.innerText = "Status: Balanced";
+                label.innerText = "DIFF (Balanced)";
                 display.innerText = "₹0.00";
-                log.innerText = "Perfect. Physical drawer count matches the transaction ledger.";
+                log.innerText = "Perfect! Cash box is correct.";
                 panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-900");
             } else if (discrepancy > 0) {
-                label.innerText = "Status: Cash Shortage";
+                label.innerText = "DIFF (Shortage)";
                 display.innerText = displayAmt;
-                log.innerText = "Warning: The physical drawer is short against current sales data.";
+                log.innerText = "Cash is short in the box.";
                 panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-900");
             } else {
-                label.innerText = "Status: Cash Surplus";
+                label.innerText = "DIFF (Extra Cash)";
                 display.innerText = displayAmt;
-                log.innerText = "Notice: Unaccounted excess cash discovered inside drawer.";
+                log.innerText = "Extra cash found in the box.";
                 panel.classList.add("bg-blue-50", "border-blue-200", "text-blue-900");
             }
         }
 
-        // Clean Canvas PDF Generation Engine
         function executePDFExport() {
             const targetElement = document.getElementById('pdf-container');
             const currentSelectedDate = document.getElementById('txnDate').value || 'Snapshot';
 
             const configurations = {
                 margin: [0.3, 0.3, 0.3, 0.3],
-                filename: `Reconciliation_Report_${currentSelectedDate}.pdf`,
+                filename: `Cash_Report_${currentSelectedDate}.pdf`,
                 image: { type: 'jpeg', quality: 1.0 },
                 html2canvas: { scale: 3, useCORS: true, letterRendering: true },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
