@@ -6,44 +6,33 @@
     <title>Daily Cash Counter</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- html2pdf Library for direct file generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         input[type="number"] { -moz-appearance: textfield; }
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Forces Landscape orientation and dynamic clean filename when saving as PDF */
-        @media print {
-            @page {
-                size: landscape;
-                margin: 0.3in;
-            }
-            .no-print { display: none !important; }
-            body { 
-                background-color: white !important; 
-                display: block !important;
-            }
-            .main-wrapper {
-                max-width: 100% !important;
-                width: 100% !important;
-                padding: 0 !important;
-            }
-            .print-grid {
-                display: grid !important;
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-                gap: 1rem !important;
-            }
-            .print-card { 
-                border: none !important; 
-                box-shadow: none !important; 
-            }
+        /* Optimized rules for Landscape PDF generation */
+        .pdf-landscape-view {
+            width: 1040px !important;
+            max-width: 1040px !important;
+            padding: 20px !important;
+            background: white !important;
+        }
+        .pdf-grid-force {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 1.5rem !important;
         }
     </style>
 </head>
 <body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-12">
 
     <!-- Screen-friendly flexible wrapper -->
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 pt-4 main-wrapper">
-        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 overflow-hidden print-card">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 pt-4">
+        <!-- Main target box for PDF Export -->
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 overflow-hidden" id="report-capture-area">
             
             <!-- Header -->
             <div class="bg-slate-900 p-4 sm:p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -54,12 +43,12 @@
                 <!-- Date Section -->
                 <div class="flex items-center gap-2 bg-slate-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start">
                     <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Date:</span>
-                    <input type="date" id="txnDate" onchange="updatePDFTitle()" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer">
+                    <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer">
                 </div>
             </div>
 
-            <!-- Fully Responsive Grid: 1 Column on Mobile, 3 Columns on iPad/Laptop/Landscape -->
-            <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
+            <!-- Fully Responsive Layout Grid -->
+            <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6" id="responsive-grid-layout">
                 
                 <!-- Column 1: Sales Inputs -->
                 <div class="space-y-4">
@@ -141,13 +130,13 @@
             </div>
         </div>
 
-        <!-- Print & WhatsApp Share Button -->
-        <div class="no-print mt-5 max-w-xs mx-auto">
-            <button onclick="handleNativePrintOrShare()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold p-3.5 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
+        <!-- Action Button Panel -->
+        <div class="mt-5 max-w-xs mx-auto data-html2canvas-ignore">
+            <button onclick="generateAndSharePDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold p-3.5 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 10.742a3 3 0 000 2.516m6.632-3.045a3 3 0 114.286 4.287 3 3 0 01-4.286-4.287zm-6.632 3.045a3 3 0 11-4.286-4.287 3 3 0 014.286 4.287z"></path>
                 </svg>
-                <span class="tracking-wide text-sm">Print or Share to WhatsApp</span>
+                <span class="tracking-wide text-sm">Export & Share PDF</span>
             </button>
         </div>
     </div>
@@ -159,7 +148,6 @@
             document.getElementById('txnDate').valueAsDate = new Date();
             initializeVaultRows();
             processSafeAccounting();
-            updatePDFTitle();
         });
 
         function initializeVaultRows() {
@@ -235,30 +223,61 @@
             }
         }
 
-        function updatePDFTitle() {
+        function getDynamicFilename() {
             const dateInput = document.getElementById('txnDate').value;
             if (dateInput) {
                 const [year, month, day] = dateInput.split('-');
-                document.title = `daily_cash_counter_${day}-${month}-${year}`;
-            } else {
-                document.title = "daily_cash_counter_report";
+                return `daily_cash_counter_${day}-${month}-${year}.pdf`;
             }
+            return "daily_cash_counter_report.pdf";
         }
 
-        function handleNativePrintOrShare() {
-            updatePDFTitle();
-            
-            // Check if Web Share API can share data directly
-            if (navigator.share) {
-                navigator.share({
-                    title: document.title,
-                    text: 'Daily Cash Report Counter Matrix Summary.',
-                    url: window.location.href
-                }).then(() => console.log('Shared successfully'))
-                  .catch(() => window.print()); // Fallback to print layout if sharing fails/cancelled
-            } else {
-                window.print();
-            }
+        function generateAndSharePDF() {
+            const element = document.getElementById('report-capture-area');
+            const gridLayout = document.getElementById('responsive-grid-layout');
+            const fileName = getDynamicFilename();
+
+            // Temporary step to turn layout into landscape mode before rendering
+            element.classList.add('pdf-landscape-view');
+            gridLayout.classList.add('pdf-grid-force');
+
+            const opt = {
+                margin: 0.1,
+                filename: fileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+
+            // Process file generation
+            html2pdf().set(opt).from(element).outputBlob().then(function(blob) {
+                // Revert interface view back to screen responsive
+                element.classList.remove('pdf-landscape-view');
+                gridLayout.classList.remove('pdf-grid-force');
+
+                const file = new File([blob], fileName, { type: 'application/pdf' });
+
+                // If mobile device allows direct file sharing
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Daily Cash Report',
+                        text: 'Please find attached the daily cash counter layout.'
+                    }).catch(err => console.log('Sharing failed', err));
+                } else {
+                    // Fallback for PC or older mobile browsers -> Instant download with proper dynamic file name
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }).catch(err => {
+                element.classList.remove('pdf-landscape-view');
+                gridLayout.classList.remove('pdf-grid-force');
+                console.error(err);
+            });
         }
     </script>
 </body>
