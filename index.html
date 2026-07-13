@@ -4,280 +4,359 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Daily Cash Counter</title>
-    <!-- Tailwind CSS for styling -->
+    <!-- Tailwind CSS Engine -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- html2pdf Library for direct file generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Robust HTML-to-PDF Pipeline -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifWnQbPhysh36EHC836UXda9maErVQ97jd3u74k6vGRUu9cWP36ywMocr4xsev7ILyIbVCmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         input[type="number"] { -moz-appearance: textfield; }
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Optimized rules for Landscape PDF generation */
-        .pdf-landscape-view {
+        /* Deterministic Engine overrides for Document Processing */
+        .pdf-canvas-target {
             width: 1040px !important;
             max-width: 1040px !important;
-            padding: 20px !important;
-            background: white !important;
+            padding: 24px !important;
+            background-color: #ffffff !important;
+            border-radius: 0px !important;
         }
-        .pdf-grid-force {
+        .pdf-grid-override {
             display: grid !important;
             grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
             gap: 1.5rem !important;
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-12">
+<body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-16">
 
-    <!-- Screen-friendly flexible wrapper -->
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 pt-4">
-        <!-- Main target box for PDF Export -->
-        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 overflow-hidden" id="report-capture-area">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-6">
+        <!-- Main Application Structural Container -->
+        <div id="report-capture-area" class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden transition-all duration-200">
             
-            <!-- Header -->
-            <div class="bg-slate-900 p-4 sm:p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-3">
+            <!-- Global Header Node -->
+            <header class="bg-slate-900 p-5 sm:p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-center sm:text-left">
-                    <h1 class="text-xl sm:text-2xl font-black tracking-tight">Daily Cash Counter</h1>
-                    <p class="text-[11px] sm:text-xs text-slate-400 font-medium">Petpooja & PhonePe Daily Report</p>
+                    <h1 class="text-2xl font-black tracking-tight select-none">Daily Cash Counter</h1>
+                    <p class="text-xs text-slate-400 font-semibold tracking-wider uppercase mt-0.5">Petpooja & PhonePe Reconciliation System</p>
                 </div>
-                <!-- Date Section -->
-                <div class="flex items-center gap-2 bg-slate-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start">
-                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Date:</span>
-                    <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer">
+                <!-- Chronological State Sync Input -->
+                <div class="flex items-center gap-2.5 bg-slate-800 px-4 py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start border border-slate-700/50">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-widest">Transaction Date</span>
+                    <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-bold text-white focus:outline-hidden cursor-pointer scheme-dark">
                 </div>
-            </div>
+            </header>
 
-            <!-- Fully Responsive Layout Grid -->
-            <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6" id="responsive-grid-layout">
+            <!-- Adaptive Grid Matrix Component -->
+            <main id="responsive-grid-layout" class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- Column 1: Sales Inputs -->
-                <div class="space-y-4">
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 1. Sales & Payments
+                <!-- Section Module 1: Telemetry and External Point-Of-Sale Inputs -->
+                <section class="space-y-4">
+                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> 1. Sales Parameters
                     </h2>
                     
-                    <div class="space-y-3">
-                        <div class="relative">
-                            <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Today Sales (Petpooja)</label>
-                            <span class="absolute left-3 top-3.5 font-bold text-slate-400 text-lg">₹</span>
-                            <input type="number" id="petpoojaSales" value="0" oninput="processSafeAccounting()" class="w-full pl-7 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-slate-50/30 focus:bg-white focus:border-blue-500 outline-hidden transition-all">
+                    <div class="space-y-3.5">
+                        <div class="relative group">
+                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider transition-colors group-focus-within:text-blue-500">Gross System Sales (Petpooja)</label>
+                            <span class="absolute left-3.5 top-3.5 font-bold text-slate-400 text-lg select-none">₹</span>
+                            <input type="number" id="petpoojaSales" value="0" min="0" step="any" autocomplete="off" class="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-slate-50/30 focus:bg-white focus:border-blue-500 focus:ring-3 focus:ring-blue-100 outline-hidden transition-all duration-150">
                         </div>
 
-                        <div class="relative">
-                            <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] font-bold text-purple-600 uppercase tracking-wider">UPI Payment (PhonePe)</label>
-                            <span class="absolute left-3 top-3.5 font-bold text-purple-400 text-lg">₹</span>
-                            <input type="number" id="phonepeUPI" value="0" oninput="processSafeAccounting()" class="w-full pl-7 pr-4 py-3 border border-purple-200 rounded-xl font-bold text-lg text-purple-900 bg-purple-50/10 focus:bg-white focus:border-purple-500 outline-hidden transition-all">
+                        <div class="relative group">
+                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-purple-600 uppercase tracking-wider transition-colors group-focus-within:text-purple-600">Digital Aggregator Vault (PhonePe)</label>
+                            <span class="absolute left-3.5 top-3.5 font-bold text-purple-400 text-lg select-none">₹</span>
+                            <input type="number" id="phonepeUPI" value="0" min="0" step="any" autocomplete="off" class="w-full pl-8 pr-4 py-3 border border-purple-100 rounded-xl font-bold text-lg text-purple-900 bg-purple-50/10 focus:bg-white focus:border-purple-500 focus:ring-3 focus:ring-purple-100 outline-hidden transition-all duration-150">
                         </div>
 
-                        <!-- Auto Calculated Cash Sales -->
-                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center shadow-xs">
+                        <!-- Derived Telemetry Node -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center shadow-xs">
                             <div>
-                                <p class="text-xs font-bold text-emerald-800">Auto Cash Sales:</p>
-                                <p class="text-[10px] text-emerald-600/80">(Sales - PhonePe)</p>
+                                <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Calculated Cash Sales</p>
+                                <p class="text-[10px] text-emerald-600/80 font-medium">(Gross System Sales - UPI Inflow)</p>
                             </div>
-                            <span id="derivedCashSales" class="text-lg font-black text-emerald-700">₹0.00</span>
+                            <span id="derivedCashSales" class="text-xl font-black text-emerald-700 tracking-tight">₹0.00</span>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Column 2: Physical Cash Count -->
-                <div>
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 2. Physical Cash Count
+                <!-- Section Module 2: High-Precision Physical Tender Inventory Matrix -->
+                <section>
+                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-3.5 flex items-center gap-2 select-none">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 2. Tender Denomination Audit
                     </h2>
 
-                    <div class="border border-slate-100 rounded-2xl overflow-hidden shadow-xs divide-y divide-slate-100" id="denomTable">
-                        <!-- Rows render here dynamically -->
+                    <div id="denomTable" class="border border-slate-100 rounded-2xl overflow-hidden shadow-xs divide-y divide-slate-100 bg-white">
+                        <!-- Pure Functional Dynamic Injections Execute Here -->
                     </div>
 
-                    <div class="mt-3 bg-slate-900 text-white p-3 rounded-xl flex justify-between items-center shadow-md">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Cash:</span>
-                        <span id="totalPhysicalCount" class="text-lg font-mono font-black text-yellow-400">₹0.00</span>
+                    <div class="mt-3.5 bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center shadow-md border border-slate-800">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 select-none">Sum-Total Hard Tender:</span>
+                        <span id="totalPhysicalCount" class="text-xl font-mono font-black text-yellow-400 tracking-wide">₹0.00</span>
                     </div>
-                </div>
+                </section>
 
-                <!-- Column 3: Calculations & Balanced Diff -->
-                <div class="space-y-4">
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 3. Calculation & Status
+                <!-- Section Module 3: Variance Calculations and Operational Health Metrics -->
+                <section class="space-y-4">
+                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">
+                        <span class="w-2 h-2 rounded-full bg-slate-600"></span> 3. Final Reconciliation Balance
                     </h2>
                     
-                    <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl space-y-3">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Yesterday Cash</label>
-                                <input type="number" id="yesterdayCash" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden text-sm">
+                    <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl space-y-3.5 shadow-xs">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="relative group">
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Opening Balance</label>
+                                <input type="number" id="yesterdayCash" value="0" min="0" step="any" class="w-full px-3 py-2.5 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden text-sm focus:border-slate-400 transition-colors">
                             </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Expense</label>
-                                <input type="number" id="storeExpenses" value="0" oninput="processSafeAccounting()" class="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl font-bold text-rose-600 outline-hidden text-sm">
+                            <div class="relative group">
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Store Payouts</label>
+                                <input type="number" id="storeExpenses" value="0" min="0" step="any" class="w-full px-3 py-2.5 border border-slate-200 bg-white rounded-xl font-bold text-rose-600 outline-hidden text-sm focus:border-rose-400 transition-colors">
                             </div>
                         </div>
 
-                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center">
-                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Expected Cash:</span>
-                            <span id="targetExpectedCash" class="text-sm font-extrabold text-slate-900">₹0.00</span>
+                        <div class="pt-3 border-t border-slate-200/80 flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider select-none">Target Expected Ledger:</span>
+                            <span id="targetExpectedCash" class="text-base font-black text-slate-900">₹0.00</span>
                         </div>
                     </div>
 
-                    <!-- DIFF Output Box -->
-                    <div id="variancePanel" class="p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[110px] transition-all duration-300">
-                        <span class="text-xs font-bold uppercase tracking-widest">DIFF</span>
-                        <span id="varianceDisplay" class="text-3xl font-black mt-2 tracking-tight">₹0.00</span>
+                    <!-- Discrepancy Vector Output Frame -->
+                    <div id="variancePanel" class="p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs">
+                        <span class="text-xs font-extrabold uppercase tracking-widest select-none">Variance Delta (DIFF)</span>
+                        <span id="varianceDisplay" class="text-3xl font-black mt-1.5 tracking-tight">₹0.00</span>
                     </div>
-                </div>
+                </section>
 
-            </div>
+            </main>
         </div>
 
-        <!-- Action Button Panel -->
-        <div class="mt-5 max-w-xs mx-auto data-html2canvas-ignore">
-            <button onclick="generateAndSharePDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold p-3.5 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- High-Reliability Action Trigger Node Panel -->
+        <div class="mt-6 max-w-xs mx-auto">
+            <button onclick="executeSecureExportSequence()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold p-4 rounded-2xl shadow-xl flex items-center justify-center space-x-2.5 transition-all cursor-pointer select-none">
+                <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 10.742a3 3 0 000 2.516m6.632-3.045a3 3 0 114.286 4.287 3 3 0 01-4.286-4.287zm-6.632 3.045a3 3 0 11-4.286-4.287 3 3 0 014.286 4.287z"></path>
                 </svg>
-                <span class="tracking-wide text-sm">Export & Share PDF</span>
+                <span class="tracking-wide text-sm">Export & Share PDF Report</span>
             </button>
         </div>
     </div>
 
+    <!-- Core Cryptographic Execution Matrix Script -->
     <script>
-        const notesLookup = [500, 200, 100, 50, 20, 10, 5];
+        "use strict";
 
+        // Global Configuration Dictionary
+        const TOKENS_VAULT_MAP = Object.freeze([500, 200, 100, 50, 20, 10, 5]);
+
+        // Lifecycle Entry Hook
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('txnDate').valueAsDate = new Date();
-            initializeVaultRows();
-            processSafeAccounting();
+            try {
+                initializeTemporalState();
+                buildStructuralDenomMatrix();
+                registerGlobalInputInterceptors();
+                performFinancialReconciliation();
+            } catch (fatalInitializationError) {
+                console.error("Critical error inside Application Runtime Initialization Block:", fatalInitializationError);
+            }
         });
 
-        function initializeVaultRows() {
-            const container = document.getElementById('denomTable');
-            container.innerHTML = '';
+        function initializeTemporalState() {
+            const dateSelector = document.getElementById('txnDate');
+            if (dateSelector) {
+                dateSelector.valueAsDate = new Date();
+                dateSelector.addEventListener('change', performFinancialReconciliation);
+            }
+        }
+
+        function buildStructuralDenomMatrix() {
+            const hostNode = document.getElementById('denomTable');
+            if (!hostNode) throw new Error("Target injection DOM node reference '#denomTable' is missing.");
             
-            notesLookup.forEach(val => {
-                const wrapper = document.createElement('div');
-                wrapper.className = "flex items-center justify-between bg-slate-50/50 px-3 py-1.5 hover:bg-slate-50";
-                wrapper.innerHTML = `
-                    <span class="w-14 text-xs font-black text-slate-600 tracking-wider">₹ ${val}</span>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-slate-400 text-[10px] font-bold">×</span>
-                        <input type="number" id="input-${val}" value="0" min="0" onkeydown="guardInputMask(event)" oninput="processSafeAccounting()" 
-                               class="w-14 text-center p-1 font-bold bg-white border border-slate-200 rounded-md text-slate-800 focus:border-blue-500 text-xs shadow-xs">
+            hostNode.innerHTML = '';
+            
+            TOKENS_VAULT_MAP.forEach(value => {
+                const rowFragment = document.createElement('div');
+                rowFragment.className = "flex items-center justify-between bg-slate-50/40 px-4 py-2 hover:bg-slate-50/80 transition-colors";
+                rowFragment.innerHTML = `
+                    <span class="w-16 text-xs font-black text-slate-600 tracking-wider">₹ ${value}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400 text-[10px] font-bold select-none">×</span>
+                        <input type="number" id="input-${value}" value="0" min="0" autocomplete="off"
+                               class="w-16 text-center p-1.5 font-bold bg-white border border-slate-200 rounded-lg text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-50 text-xs shadow-xs transition-all outline-hidden">
                     </div>
-                    <span id="output-${val}" class="w-24 text-right font-mono font-bold text-slate-600 text-xs">₹0.00</span>
+                    <span id="output-${value}" class="w-28 text-right font-mono font-bold text-slate-600 text-xs">₹0.00</span>
                 `;
-                container.appendChild(wrapper);
+                hostNode.appendChild(rowFragment);
             });
         }
 
-        function guardInputMask(e) {
-            if (e.key === '-' || e.key === '.' || e.key === 'e' || e.key === 'E') {
-                e.preventDefault();
+        function registerGlobalInputInterceptors() {
+            // Intercept unwanted chars at keydown level across numeric vector fields
+            const targets = ['petpoojaSales', 'phonepeUPI', 'yesterdayCash', 'storeExpenses'];
+            TOKENS_VAULT_MAP.forEach(v => targets.push(`input-${v}`));
+
+            targets.forEach(id => {
+                const domNode = document.getElementById(id);
+                if (domNode) {
+                    domNode.addEventListener('keydown', (event) => {
+                        if (['-', '+', 'e', 'E'].includes(event.key)) {
+                            event.preventDefault();
+                        }
+                    });
+                    domNode.addEventListener('input', performFinancialReconciliation);
+                }
+            });
+        }
+
+        function performFinancialReconciliation() {
+            try {
+                const fetchSafeNumericValue = (elementId) => {
+                    const el = document.getElementById(elementId);
+                    if (!el) return 0;
+                    const parsed = parseFloat(el.value);
+                    return isNaN(parsed) || parsed < 0 ? 0 : parsed;
+                };
+
+                const salesTotal = fetchSafeNumericValue('petpoojaSales');
+                const digitalUPIInflow = fetchSafeNumericValue('phonepeUPI');
+                const historicalOpening = fetchSafeNumericValue('yesterdayCash');
+                const operationalExpenses = fetchSafeNumericValue('storeExpenses');
+
+                // Derive Realized Base Cash Inflow
+                const rawCalculatedCashSales = salesTotal - digitalUPIInflow;
+                document.getElementById('derivedCashSales').innerText = "₹" + rawCalculatedCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                // Accumulate Tender Denomination Vault Matrix
+                let localizedVaultAggregateSum = 0;
+                TOKENS_VAULT_MAP.forEach(denomination => {
+                    const countMultiplier = Math.floor(fetchSafeNumericValue(`input-${denomination}`));
+                    const computationalProduct = countMultiplier * denomination;
+                    
+                    const outputCell = document.getElementById(`output-${denomination}`);
+                    if (outputCell) {
+                        outputCell.innerText = "₹" + computationalProduct.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                    localizedVaultAggregateSum += computationalProduct;
+                });
+
+                document.getElementById('totalPhysicalCount').innerText = "₹" + localizedVaultAggregateSum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                // Process Mathematical Ledger Target
+                const calculatedLedgerTarget = rawCalculatedCashSales + historicalOpening - operationalExpenses;
+                document.getElementById('targetExpectedCash').innerText = "₹" + calculatedLedgerTarget.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                // Evaluate Global Accounting Deviation Matrix
+                const absoluteVarianceDelta = calculatedLedgerTarget - localizedVaultAggregateSum;
+                evaluateUIFeedbackState(absoluteVarianceDelta);
+                
+            } catch (runtimeCalculationException) {
+                console.error("Mathematical state processor caught anomaly:", runtimeCalculationException);
             }
         }
 
-        function processSafeAccounting() {
-            const parseVal = (id) => parseFloat(document.getElementById(id).value) || 0;
-
-            const salesTotal = parseVal('petpoojaSales');
-            const upiTotal = parseVal('phonepeUPI');
-            const baseOpening = parseVal('yesterdayCash');
-            const expensePayouts = parseVal('storeExpenses');
-            const cashDisplayRow = document.getElementById('derivedCashSales');
-
-            const accurateCashSales = salesTotal - upiTotal;
-            cashDisplayRow.innerText = "₹" + accurateCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-
-            let totalVaultCashMeasured = 0;
-            notesLookup.forEach(denom => {
-                const count = parseInt(document.getElementById(`input-${denom}`).value) || 0;
-                const combinedRowValue = count * denom;
-                document.getElementById(`output-${denom}`).innerText = "₹" + combinedRowValue.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-                totalVaultCashMeasured += combinedRowValue;
-            });
-            document.getElementById('totalPhysicalCount').innerText = "₹" + totalVaultCashMeasured.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-
-            const absoluteExpectedBalance = accurateCashSales + baseOpening - expensePayouts;
-            document.getElementById('targetExpectedCash').innerText = "₹" + absoluteExpectedBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-
-            const globalDiscrepancy = absoluteExpectedBalance - totalVaultCashMeasured;
-            
-            renderUXVarianceState(globalDiscrepancy);
-        }
-
-        function renderUXVarianceState(discrepancy) {
+        function evaluateUIFeedbackState(varianceDelta) {
             const panel = document.getElementById('variancePanel');
-            const display = document.getElementById('varianceDisplay');
+            const numericalTextContainer = document.getElementById('varianceDisplay');
+            if (!panel || !numericalTextContainer) return;
 
-            panel.className = "p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[110px] transition-all duration-300";
+            // Purge class allocations dynamically
+            panel.className = "p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs";
 
-            if (discrepancy < 0) {
-                display.innerText = "-" + "₹" + Math.abs(discrepancy).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-                panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-700");
-            } else if (discrepancy > 0) {
-                display.innerText = "+" + "₹" + discrepancy.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-                panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-600");
-            } else {
-                display.innerText = "₹0.00";
+            // JavaScript decimal precision epsilon normalization boundary
+            if (Math.abs(varianceDelta) < 0.01) {
+                numericalTextContainer.innerText = "₹0.00";
                 panel.classList.add("bg-slate-50", "border-slate-200", "text-slate-700");
+            } else if (varianceDelta < 0) {
+                // Cash Surplus Scenario
+                numericalTextContainer.innerText = "Surplus: ₹" + Math.abs(varianceDelta).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-700");
+            } else {
+                // Deficit Shortage Scenario
+                numericalTextContainer.innerText = "Shortage: ₹" + varianceDelta.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-600");
             }
         }
 
-        function getDynamicFilename() {
-            const dateInput = document.getElementById('txnDate').value;
-            if (dateInput) {
-                const [year, month, day] = dateInput.split('-');
-                return `daily_cash_counter_${day}-${month}-${year}.pdf`;
+        function computeTargetIdentifierString() {
+            const specifiedDateStr = document.getElementById('txnDate').value;
+            if (specifiedDateStr) {
+                const [yyyy, mm, dd] = specifiedDateStr.split('-');
+                return `daily_cash_counter_${dd}-${mm}-${yyyy}`;
             }
-            return "daily_cash_counter_report.pdf";
+            return "daily_cash_counter_compiled_report";
         }
 
-        function generateAndSharePDF() {
-            const element = document.getElementById('report-capture-area');
-            const gridLayout = document.getElementById('responsive-grid-layout');
-            const fileName = getDynamicFilename();
+        function executeSecureExportSequence() {
+            const rootCaptureBox = document.getElementById('report-capture-area');
+            const targetGridLayout = document.getElementById('responsive-grid-layout');
+            
+            if (!rootCaptureBox || !targetGridLayout) {
+                alert("Runtime Exception: Required DOM elements could not be referenced.");
+                return;
+            }
 
-            // Temporary step to turn layout into landscape mode before rendering
-            element.classList.add('pdf-landscape-view');
-            gridLayout.classList.add('pdf-grid-force');
+            const generatedFileName = computeTargetIdentifierString() + ".pdf";
 
-            const opt = {
-                margin: 0.1,
-                filename: fileName,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
+            // Inject Immutable Engine Mutators for High Fidelity Canvas Rendering
+            rootCaptureBox.classList.add('pdf-canvas-target');
+            targetGridLayout.classList.add('pdf-grid-override');
+
+            const deploymentConfiguration = {
+                margin: 0.15,
+                filename: generatedFileName,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true },
                 jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
             };
 
-            // Process file generation
-            html2pdf().set(opt).from(element).outputBlob().then(function(blob) {
-                // Revert interface view back to screen responsive
-                element.classList.remove('pdf-landscape-view');
-                gridLayout.classList.remove('pdf-grid-force');
+            // Instantiate Asynchronous Canvas Conversion Stream
+            html2pdf().set(deploymentConfiguration).from(rootCaptureBox).outputBlob()
+            .then((binaryBlobInstance) => {
+                // Instantly strip canvas overrides to preserve screen styling structure
+                rootCaptureBox.classList.remove('pdf-canvas-target');
+                targetGridLayout.classList.remove('pdf-grid-override');
 
-                const file = new File([blob], fileName, { type: 'application/pdf' });
+                const runtimeSharedFileObject = new File([binaryBlobInstance], generatedFileName, { type: 'application/pdf' });
 
-                // If mobile device allows direct file sharing
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                // Assess Native Transport Share API capabilities for direct WhatsApp transmission
+                if (navigator.canShare && navigator.canShare({ files: [runtimeSharedFileObject] })) {
                     navigator.share({
-                        files: [file],
-                        title: 'Daily Cash Report',
-                        text: 'Please find attached the daily cash counter layout.'
-                    }).catch(err => console.log('Sharing failed', err));
+                        files: [runtimeSharedFileObject],
+                        title: 'Daily Cash Reconciliation Report',
+                        text: `Automated Ledger Export File: ${generatedFileName}`
+                    })
+                    .then(() => console.log("Blob transport packet dispatched successfully to system sharing node."))
+                    .catch((apiSharingRejection) => {
+                        console.warn("User aborted system sheet or subsystem constraint hit, handling fallback download sequence:", apiSharingRejection);
+                        executeLocalDownloadFallback(binaryBlobInstance, generatedFileName);
+                    });
                 } else {
-                    // Fallback for PC or older mobile browsers -> Instant download with proper dynamic file name
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = fileName;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    // Fail-safe Architecture for Desktop PCs or Legacy Browser Systems
+                    executeLocalDownloadFallback(binaryBlobInstance, generatedFileName);
                 }
-            }).catch(err => {
-                element.classList.remove('pdf-landscape-view');
-                gridLayout.classList.remove('pdf-grid-force');
-                console.error(err);
+            })
+            .catch((criticalPipelineException) => {
+                // Ensure layout returns to state on exception throw
+                rootCaptureBox.classList.remove('pdf-canvas-target');
+                targetGridLayout.classList.remove('pdf-grid-override');
+                console.error("Structural PDF Pipeline caught critical error execution block exception:", criticalPipelineException);
+                alert("An internal exception occurred during rendering. Details logged to engineering stack trace.");
             });
+        }
+
+        function executeLocalDownloadFallback(blobSource, targetedOutputName) {
+            const anchorElement = document.createElement('a');
+            const structuralObjectUrl = URL.createObjectURL(blobSource);
+            
+            anchorElement.href = structuralObjectUrl;
+            anchorElement.download = targetedOutputName;
+            document.body.appendChild(anchorElement);
+            
+            anchorElement.click();
+            
+            // Clean dynamic structures instantly out of virtual DOM tree context to prevent leaks
+            document.body.removeChild(anchorElement);
+            window.URL.revokeObjectURL(structuralObjectUrl);
         }
     </script>
 </body>
