@@ -730,7 +730,7 @@
     <div class="grid grid-cols-3 gap-6">
       
       <!-- Col 1: Sales Summary -->
-      <div class="border border-slate-200 rounded-lg p-3 space-y-3 bg-slate-50/50">
+      <div class="border border-slate-200 rounded-lg p-3 space-y-3 bg-slate-50">
         <h2 class="text-[9px] font-black uppercase tracking-wider text-slate-900 border-b border-slate-200 pb-1 flex items-center justify-between">
           <span>Inflow Accounting</span>
           <span class="text-[8px] text-slate-500 font-semibold">INR (&#8377;)</span>
@@ -738,19 +738,19 @@
         
         <table class="w-full text-[9px] border-collapse space-y-1">
           <tbody>
-            <tr class="border-b border-slate-200/50">
+            <tr class="border-b border-slate-200">
               <td class="py-1 text-slate-600 font-medium">Gross Sales (Petpooja)</td>
               <td id="pdf-sales-gross" class="py-1 text-right font-bold text-slate-900">&#8377;0.00</td>
             </tr>
-            <tr class="border-b border-slate-200/50">
+            <tr class="border-b border-slate-200">
               <td class="py-1 text-slate-600 font-medium">UPI Inflows (PhonePe/GPay)</td>
               <td id="pdf-sales-upi" class="py-1 text-right font-bold text-slate-900">&#8377;0.00</td>
             </tr>
-            <tr class="bg-emerald-50/50">
+            <tr class="bg-emerald-50">
               <td class="py-1.5 pl-1 text-emerald-800 font-bold">Expected Cash Sales</td>
               <td id="pdf-sales-expected-cash" class="py-1.5 pr-1 text-right font-extrabold text-emerald-850">&#8377;0.00</td>
             </tr>
-            <tr class="border-b border-slate-200/50">
+            <tr class="border-b border-slate-200">
               <td class="py-1 text-slate-600 font-medium">Opening Drawer Cash</td>
               <td id="pdf-sales-opening" class="py-1 text-right font-bold text-slate-900">&#8377;0.00</td>
             </tr>
@@ -759,7 +759,7 @@
       </div>
 
       <!-- Col 2: Vault breakdown -->
-      <div class="border border-slate-200 rounded-lg p-3 space-y-3 bg-slate-50/50">
+      <div class="border border-slate-200 rounded-lg p-3 space-y-3 bg-slate-50">
         <h2 class="text-[9px] font-black uppercase tracking-wider text-slate-900 border-b border-slate-200 pb-1">
           Cash Count Breakdown
         </h2>
@@ -776,7 +776,7 @@
             <!-- Dynamic -->
           </tbody>
           <tfoot>
-            <tr class="border-t border-slate-900 bg-emerald-50/50">
+            <tr class="border-t border-slate-900 bg-emerald-50">
               <td colspan="2" class="py-1.5 pl-1 font-bold text-emerald-800">Total Hand Cash</td>
               <td id="pdf-hand-cash-total" class="py-1.5 pr-1 text-right font-extrabold text-emerald-850">&#8377;0.00</td>
             </tr>
@@ -785,12 +785,12 @@
       </div>
 
       <!-- Col 3: Expense List -->
-      <div class="border border-slate-200 rounded-lg p-3 space-y-3 bg-slate-50/50">
+      <div class="border border-slate-200 rounded-lg p-3 space-y-3 bg-slate-50">
         <h2 class="text-[9px] font-black uppercase tracking-wider text-slate-900 border-b border-slate-200 pb-1">
           Daily Store Payouts
         </h2>
 
-        <div class="min-h-[100px] border border-slate-200/60 rounded-md bg-white overflow-hidden">
+        <div class="min-h-[100px] border border-slate-200 rounded-md bg-white overflow-hidden">
           <table class="w-full text-[8px] border-collapse">
             <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
               <tr>
@@ -1689,7 +1689,7 @@
         handCash += subtotal;
         
         const tr = document.createElement('tr');
-        tr.className = "border-b border-slate-200/50";
+        tr.className = "border-b border-slate-100";
         tr.innerHTML = `
           <td class="py-1 text-slate-700 font-semibold">₹${d}</td>
           <td class="py-1 text-center font-medium text-slate-600">${count}</td>
