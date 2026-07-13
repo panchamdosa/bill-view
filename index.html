@@ -54,7 +54,7 @@
                 <!-- Date Section -->
                 <div class="flex items-center gap-2 bg-slate-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start">
                     <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Date:</span>
-                    <input type="date" id="txnDate" onchange="updatePDFTitle()" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer invert-0 dark:invert-0">
+                    <input type="date" id="txnDate" onchange="updatePDFTitle()" class="bg-transparent border-none text-sm font-semibold text-white focus:outline-hidden cursor-pointer">
                 </div>
             </div>
 
@@ -141,13 +141,13 @@
             </div>
         </div>
 
-        <!-- Stable Landscape Print Button -->
+        <!-- Print & WhatsApp Share Button -->
         <div class="no-print mt-5 max-w-xs mx-auto">
-            <button onclick="handleNativePrint()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold p-3.5 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
-                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            <button onclick="handleNativePrintOrShare()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold p-3.5 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 10.742a3 3 0 000 2.516m6.632-3.045a3 3 0 114.286 4.287 3 3 0 01-4.286-4.287zm-6.632 3.045a3 3 0 11-4.286-4.287 3 3 0 014.286 4.287z"></path>
                 </svg>
-                <span class="tracking-wide text-sm">Save Landscape PDF Report</span>
+                <span class="tracking-wide text-sm">Print or Share to WhatsApp</span>
             </button>
         </div>
     </div>
@@ -159,7 +159,7 @@
             document.getElementById('txnDate').valueAsDate = new Date();
             initializeVaultRows();
             processSafeAccounting();
-            updatePDFTitle(); // Set initial file name
+            updatePDFTitle();
         });
 
         function initializeVaultRows() {
@@ -235,7 +235,6 @@
             }
         }
 
-        // Dynamically changes page title so the printed PDF filename matches exactly "daily_cash_counter_DD-MM-YYYY"
         function updatePDFTitle() {
             const dateInput = document.getElementById('txnDate').value;
             if (dateInput) {
@@ -246,9 +245,20 @@
             }
         }
 
-        function handleNativePrint() {
+        function handleNativePrintOrShare() {
             updatePDFTitle();
-            window.print();
+            
+            // Check if Web Share API can share data directly
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: 'Daily Cash Report Counter Matrix Summary.',
+                    url: window.location.href
+                }).then(() => console.log('Shared successfully'))
+                  .catch(() => window.print()); // Fallback to print layout if sharing fails/cancelled
+            } else {
+                window.print();
+            }
         }
     </script>
 </body>
