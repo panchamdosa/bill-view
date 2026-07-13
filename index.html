@@ -1,54 +1,326 @@
-<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">    <title>Daily Cash Counter</title>    <!-- Tailwind CSS -->    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>    <!-- html2pdf Bundle (Corrected Integrity Hash) -->    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <style>        input[type="number"] { -moz-appearance: textfield; }        input[type="number"]::-webkit-outer-spin-button,        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }                /* Strict Single Page Landscape PDF Container Rules */        .pdf-strict-single-page {            width: 1120px !important;            max-width: 1120px !important;            min-height: 790px !important;            height: 790px !important;            padding: 32px !important;            background-color: #ffffff !important;            box-sizing: border-box !important;            display: flex !important;            flex-direction: column !important;            justify-content: space-between !important;        }        .pdf-strict-grid {            display: grid !important;            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;            gap: 1.5rem !important;            flex-grow: 1 !important;            align-items: start !important;        }    </style></head><body class="bg-slate-100 font-sans min-h-screen text-slate-900 antialiased pb-16">
-    <div class="max-w-7xl mx-auto px-4 pt-6">        <!-- Capture Target Area -->        <div id="report-capture-area" class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden transition-all duration-300">                        <!-- App Header -->            <header class="bg-slate-900 p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">                <div class="text-center sm:text-left">                    <h1 class="text-2xl font-black tracking-tight select-none">Daily Cash Counter</h1>                    <p class="text-xs text-slate-400 font-medium tracking-wider uppercase mt-1">Petpooja & PhonePe Reconciliation Sheet</p>                </div>                <!-- Date Synchronizer -->                <div class="flex items-center gap-3 bg-slate-800 px-4 py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start border border-slate-700">                    <span class="text-xs font-bold text-slate-300 uppercase tracking-widest">Report Date:</span>                    <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-bold text-white focus:outline-hidden cursor-pointer scheme-dark">                </div>            </header>
-            <!-- Fully Fluid UI Grid -->            <main id="responsive-grid-layout" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">                                <!-- Card Block 1: Sales Summary -->                <section class="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> 1. Revenue Inputs                    </h2>                                        <div class="space-y-4">                        <div class="relative group">                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Gross Sales (Petpooja)</label>                            <span class="absolute left-3.5 top-3.5 font-bold text-slate-400 text-lg select-none">₹</span>                            <input type="number" id="petpoojaSales" value="0" min="0" step="any" class="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-50 outline-hidden transition-all">                        </div>
-                        <div class="relative group">                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-purple-600 uppercase tracking-wider">UPI Inflow (PhonePe)</label>                            <span class="absolute left-3.5 top-3.5 font-bold text-purple-400 text-lg select-none">₹</span>                            <input type="number" id="phonepeUPI" value="0" min="0" step="any" class="w-full pl-8 pr-4 py-3 border border-purple-200 rounded-xl font-bold text-lg text-purple-900 bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-50 outline-hidden transition-all">                        </div>
-                        <!-- Derived Telemetry Row -->                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4 flex justify-between items-center shadow-xs">                            <div>                                <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Expected Cash Sales</p>                                <p class="text-[10px] text-emerald-600/70 font-medium">(Sales minus UPI)</p>                            </div>                            <span id="derivedCashSales" class="text-xl font-black text-emerald-700 tracking-tight">₹0.00</span>                        </div>                    </div>                </section>
-                <!-- Card Block 2: Denomination Counter -->                <section class="bg-slate-50/50 p-5 rounded-2xl border border-slate-100">                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 select-none">                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 2. Physical Vault Count                    </h2>
-                    <div id="denomTable" class="border border-slate-200 rounded-xl overflow-hidden shadow-xs divide-y divide-slate-200 bg-white">                        <!-- Instantiated via JavaScript dynamic matrix layout -->                    </div>
-                    <div class="mt-4 bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center shadow-md border border-slate-800">                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 select-none">Total Hand Cash:</span>                        <span id="totalPhysicalCount" class="text-xl font-mono font-black text-yellow-400">₹0.00</span>                    </div>                </section>
-                <!-- Card Block 3: Calculation & Verdict -->                <section class="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">                        <span class="w-2 h-2 rounded-full bg-slate-600"></span> 3. Reconciliation Diagnostics                    </h2>                                        <div class="bg-white border border-slate-200 p-4 rounded-xl space-y-4 shadow-xs">                        <div class="grid grid-cols-2 gap-3">                            <div>                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Opening Cash</label>                                <input type="number" id="yesterdayCash" value="0" min="0" step="any" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-slate-800 outline-hidden text-sm focus:border-slate-400 transition-colors">                            </div>                            <div>                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Daily Payouts</label>                                <input type="number" id="storeExpenses" value="0" min="0" step="any" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-rose-600 outline-hidden text-sm focus:border-rose-400 transition-colors">                            </div>                        </div>
-                        <div class="pt-3 border-t border-slate-200 flex justify-between items-center">                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider select-none">Ledger Expected:</span>                            <span id="targetExpectedCash" class="text-base font-black text-slate-900">₹0.00</span>                        </div>                    </div>
-                    <!-- Dynamic Variance Feedback Deck -->                    <div id="variancePanel" class="p-6 rounded-xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs">                        <span class="text-xs font-extrabold uppercase tracking-widest select-none">Variance Status (DIFF)</span>                        <span id="varianceDisplay" class="text-3xl font-black mt-1 tracking-tight">₹0.00</span>                    </div>                </section>
-            </main>        </div>
-        <!-- Action Control Trigger -->        <div class="mt-6 max-w-xs mx-auto">            <button onclick="processHighFidelityExport()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold p-4 rounded-2xl shadow-xl flex items-center justify-center space-x-2.5 transition-all cursor-pointer select-none">                <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 10.742a3 3 0 000 2.516m6.632-3.045a3 3 0 114.286 4.287 3 3 0 01-4.286-4.287zm-6.632 3.045a3 3 0 11-4.286-4.287 3 3 0 014.286 4.287z"></path>                </svg>                <span class="tracking-wide text-sm">Export & Share PDF Report</span>            </button>        </div>    </div>
-    <!-- Core Pipeline Module Logic -->    <script>        "use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Daily Cash Counter</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- html2pdf Bundle (Corrected Integrity Hash) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+                
+        /* Strict Single Page Landscape PDF Container Rules */
+        .pdf-strict-single-page {
+            width: 1120px !important;
+            max-width: 1120px !important;
+            min-height: 790px !important;
+            height: 790px !important;
+            padding: 32px !important;
+            background-color: #ffffff !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+        }
+        .pdf-strict-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 1.5rem !important;
+            flex-grow: 1 !important;
+            align-items: start !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen text-slate-900 antialiased pb-16">
+    <div class="max-w-7xl mx-auto px-4 pt-6">
+        <!-- Capture Target Area -->
+        <div id="report-capture-area" class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden transition-all duration-300">
+                        <!-- App Header -->
+            <header class="bg-slate-900 p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-center sm:text-left">
+                    <h1 class="text-2xl font-black tracking-tight select-none">Daily Cash Counter</h1>
+                    <p class="text-xs text-slate-400 font-medium tracking-wider uppercase mt-1">Petpooja & PhonePe Reconciliation Sheet</p>
+                </div>
+                <!-- Date Synchronizer -->
+                <div class="flex items-center gap-3 bg-slate-800 px-4 py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start border border-slate-700">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-widest">Report Date:</span>
+                    <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-bold text-white focus:outline-hidden cursor-pointer scheme-dark">
+                </div>
+            </header>
+
+            <!-- Fully Fluid UI Grid -->
+            <main id="responsive-grid-layout" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Card Block 1: Sales Summary -->
+                <section class="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
+                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> 1. Revenue Inputs
+                    </h2>
+                                        <div class="space-y-4">
+                        <div class="relative group">
+                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Gross Sales (Petpooja)</label>
+                            <span class="absolute left-3.5 top-3.5 font-bold text-slate-400 text-lg select-none">₹</span>
+                            <input type="number" id="petpoojaSales" value="0" min="0" step="any" class="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-50 outline-hidden transition-all">
+                        </div>
+
+                        <div class="relative group">
+                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-purple-600 uppercase tracking-wider">UPI Inflow (PhonePe)</label>
+                            <span class="absolute left-3.5 top-3.5 font-bold text-purple-400 text-lg select-none">₹</span>
+                            <input type="number" id="phonepeUPI" value="0" min="0" step="any" class="w-full pl-8 pr-4 py-3 border border-purple-200 rounded-xl font-bold text-lg text-purple-900 bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-50 outline-hidden transition-all">
+                        </div>
+
+                        <!-- Derived Telemetry Row -->
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4 flex justify-between items-center shadow-xs">
+                            <div>
+                                <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Expected Cash Sales</p>
+                                <p class="text-[10px] text-emerald-600/70 font-medium">(Sales minus UPI)</p>
+                            </div>
+                            <span id="derivedCashSales" class="text-xl font-black text-emerald-700 tracking-tight">₹0.00</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Card Block 2: Denomination Counter -->
+                <section class="bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
+                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 select-none">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 2. Physical Vault Count
+                    </h2>
+
+                    <div id="denomTable" class="border border-slate-200 rounded-xl overflow-hidden shadow-xs divide-y divide-slate-200 bg-white">
+                        <!-- Instantiated via JavaScript dynamic matrix layout -->
+                    </div>
+
+                    <div class="mt-4 bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center shadow-md border border-slate-800">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 select-none">Total Hand Cash:</span>
+                        <span id="totalPhysicalCount" class="text-xl font-mono font-black text-yellow-400">₹0.00</span>
+                    </div>
+                </section>
+
+                <!-- Card Block 3: Calculation & Verdict -->
+                <section class="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
+                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">
+                        <span class="w-2 h-2 rounded-full bg-slate-600"></span> 3. Reconciliation Diagnostics
+                    </h2>
+                                        <div class="bg-white border border-slate-200 p-4 rounded-xl space-y-4 shadow-xs">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Opening Cash</label>
+                                <input type="number" id="yesterdayCash" value="0" min="0" step="any" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-slate-800 outline-hidden text-sm focus:border-slate-400 transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Daily Payouts</label>
+                                <input type="number" id="storeExpenses" value="0" min="0" step="any" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-rose-600 outline-hidden text-sm focus:border-rose-400 transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider select-none">Ledger Expected:</span>
+                            <span id="targetExpectedCash" class="text-base font-black text-slate-900">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Variance Feedback Deck -->
+                    <div id="variancePanel" class="p-6 rounded-xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs">
+                        <span class="text-xs font-extrabold uppercase tracking-widest select-none">Variance Status (DIFF)</span>
+                        <span id="varianceDisplay" class="text-3xl font-black mt-1 tracking-tight">₹0.00</span>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Action Control Trigger -->
+        <div class="mt-6 max-w-xs mx-auto">
+            <button onclick="processHighFidelityExport()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold p-4 rounded-2xl shadow-xl flex items-center justify-center space-x-2.5 transition-all cursor-pointer select-none">
+                <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 10.742a3 3 0 000 2.516m6.632-3.045a3 3 0 114.286 4.287 3 3 0 01-4.286-4.287zm-6.632 3.045a3 3 0 11-4.286-4.287 3 3 0 014.286 4.287z"></path>
+                </svg>
+                <span class="tracking-wide text-sm">Export & Share PDF Report</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Core Pipeline Module Logic -->
+    <script>
+        "use strict";
+
         const VAL_MAP = Object.freeze([500, 200, 100, 50, 20, 10, 5]);
-        window.addEventListener('DOMContentLoaded', () => {            try {                const dateBox = document.getElementById('txnDate');                if (dateBox) {                    dateBox.valueAsDate = new Date();                    dateBox.addEventListener('change', runAccountingEngine);                }                buildDynamicDenomView();                bindSafetyInterceptors();                runAccountingEngine();            } catch (err) {                console.error("System Runtime Bootstrap Failure: ", err);            }        });
-        function buildDynamicDenomView() {            const container = document.getElementById('denomTable');            if (!container) return;            container.innerHTML = '';                        VAL_MAP.forEach(denom => {                const row = document.createElement('div');                row.className = "flex items-center justify-between px-4 py-2 hover:bg-slate-50 transition-colors";                row.innerHTML = `                    <span class="w-16 text-xs font-black text-slate-600 tracking-wider">₹ ${denom}</span>                    <div class="flex items-center gap-1.5">                        <span class="text-slate-400 text-[10px] font-bold select-none">×</span>                        <input type="number" id="input-${denom}" value="0" min="0" autocomplete="off"                               class="w-16 text-center p-1 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-bold focus:bg-white focus:border-blue-500 text-xs transition-all outline-hidden">                    </div>                    <span id="output-${denom}" class="w-24 text-right font-mono font-bold text-slate-600 text-xs">₹0.00</span>                `;                container.appendChild(row);            });        }
-        function bindSafetyInterceptors() {            const globalFields = ['petpoojaSales', 'phonepeUPI', 'yesterdayCash', 'storeExpenses'];            VAL_MAP.forEach(v => globalFields.push(`input-${v}`));
-            globalFields.forEach(id => {                const el = document.getElementById(id);                if (el) {                    el.addEventListener('keydown', (e) => {                        if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault();                    });                    el.addEventListener('input', runAccountingEngine);                }            });        }
-        function runAccountingEngine() {            try {                const readVal = (id) => {                    const el = document.getElementById(id);                    if (!el) return 0;                    const val = parseFloat(el.value);                    return isNaN(val) || val < 0 ? 0 : val;                };
-                const sales = readVal('petpoojaSales');                const upi = readVal('phonepeUPI');                const opening = readVal('yesterdayCash');                const payouts = readVal('storeExpenses');
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const dateBox = document.getElementById('txnDate');
+                if (dateBox) {
+                    dateBox.valueAsDate = new Date();
+                    dateBox.addEventListener('change', runAccountingEngine);
+                }
+                buildDynamicDenomView();
+                bindSafetyInterceptors();
+                runAccountingEngine();
+            } catch (err) {
+                console.error("System Runtime Bootstrap Failure: ", err);
+            }
+        });
 
-                const derivedCashSales = sales - upi;                document.getElementById('derivedCashSales').innerText = "₹" + derivedCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        function buildDynamicDenomView() {
+            const container = document.getElementById('denomTable');
+            if (!container) return;
+            container.innerHTML = '';
+                        
+            VAL_MAP.forEach(denom => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between px-4 py-2 hover:bg-slate-50 transition-colors";
+                row.innerHTML = `
+                    <span class="w-16 text-xs font-black text-slate-600 tracking-wider">₹ ${denom}</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-slate-400 text-[10px] font-bold select-none">×</span>
+                        <input type="number" id="input-${denom}" value="0" min="0" autocomplete="off"
+                               class="w-16 text-center p-1 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-bold focus:bg-white focus:border-blue-500 text-xs transition-all outline-hidden">
+                    </div>
+                    <span id="output-${denom}" class="w-24 text-right font-mono font-bold text-slate-600 text-xs">₹0.00</span>
+                `;
+                container.appendChild(row);
+            });
+        }
 
-                let totalPhysicalSum = 0;                VAL_MAP.forEach(denom => {                    const count = Math.floor(readVal(`input-${denom}`));                    const product = count * denom;                    const outCell = document.getElementById(`output-${denom}`);                    if (outCell) outCell.innerText = "₹" + product.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });                    totalPhysicalSum += product;                });                document.getElementById('totalPhysicalCount').innerText = "₹" + totalPhysicalSum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        function bindSafetyInterceptors() {
+            const globalFields = ['petpoojaSales', 'phonepeUPI', 'yesterdayCash', 'storeExpenses'];
+            VAL_MAP.forEach(v => globalFields.push(`input-${v}`));
 
-                const expectedLedger = derivedCashSales + opening - payouts;                document.getElementById('targetExpectedCash').innerText = "₹" + expectedLedger.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            globalFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('keydown', (e) => {
+                        if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault();
+                    });
+                    el.addEventListener('input', runAccountingEngine);
+                }
+            });
+        }
 
-                const delta = expectedLedger - totalPhysicalSum;                updateUIVariancePanel(delta);
-            } catch (ex) {                console.error("Calculated engine anomaly suppressed:", ex);            }        }Suffix
+        function runAccountingEngine() {
+            try {
+                const readVal = (id) => {
+                    const el = document.getElementById(id);
+                    if (!el) return 0;
+                    const val = parseFloat(el.value);
+                    return isNaN(val) || val < 0 ? 0 : val;
+                };
 
-        function updateUIVariancePanel(delta) {            const panel = document.getElementById('variancePanel');            const txt = document.getElementById('varianceDisplay');            if (!panel || !txt) return;
+                const sales = readVal('petpoojaSales');
+                const upi = readVal('phonepeUPI');
+                const opening = readVal('yesterdayCash');
+                const payouts = readVal('storeExpenses');
+
+                const derivedCashSales = sales - upi;
+                document.getElementById('derivedCashSales').innerText = "₹" + derivedCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                let totalPhysicalSum = 0;
+                VAL_MAP.forEach(denom => {
+                    const count = Math.floor(readVal(`input-${denom}`));
+                    const product = count * denom;
+                    const outCell = document.getElementById(`output-${denom}`);
+                    if (outCell) outCell.innerText = "₹" + product.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    totalPhysicalSum += product;
+                });
+                document.getElementById('totalPhysicalCount').innerText = "₹" + totalPhysicalSum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                const expectedLedger = derivedCashSales + opening - payouts;
+                document.getElementById('targetExpectedCash').innerText = "₹" + expectedLedger.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                const delta = expectedLedger - totalPhysicalSum;
+                updateUIVariancePanel(delta);
+            } catch (ex) {
+                console.error("Calculated engine anomaly suppressed:", ex);
+            }
+        }
+
+        function updateUIVariancePanel(delta) {
+            const panel = document.getElementById('variancePanel');
+            const txt = document.getElementById('varianceDisplay');
+            if (!panel || !txt) return;
 
             panel.className = "p-6 rounded-xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs";
 
-            if (Math.abs(delta) < 0.01) {                txt.innerText = "₹0.00";                panel.classList.add("bg-slate-50", "border-slate-200", "text-slate-700");            } else if (delta < 0) {                txt.innerText = "Surplus: ₹" + Math.abs(delta).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });                panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-700");            } else {                txt.innerText = "Shortage: ₹" + delta.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });                panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-600");            }        }
+            if (Math.abs(delta) < 0.01) {
+                txt.innerText = "₹0.00";
+                panel.classList.add("bg-slate-50", "border-slate-200", "text-slate-700");
+            } else if (delta < 0) {
+                txt.innerText = "Surplus: ₹" + Math.abs(delta).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-700");
+            } else {
+                txt.innerText = "Shortage: ₹" + delta.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-600");
+            }
+        }
 
-        function generateFileName() {            const dateStr = document.getElementById('txnDate').value;            if (dateStr) {                const [yyyy, mm, dd] = dateStr.split('-');                return `daily_cash_counter_${dd}-${mm}-${yyyy}.pdf`;            }            return "daily_cash_counter_report.pdf";        }
+        function generateFileName() {
+            const dateStr = document.getElementById('txnDate').value;
+            if (dateStr) {
+                const [yyyy, mm, dd] = dateStr.split('-');
+                return `daily_cash_counter_${dd}-${mm}-${yyyy}.pdf`;
+            }
+            return "daily_cash_counter_report.pdf";
+        }
 
-        function processHighFidelityExport() {            const wrapper = document.getElementById('report-capture-area');            const grid = document.getElementById('responsive-grid-layout');            if (!wrapper || !grid) return;
+        function processHighFidelityExport() {
+            const wrapper = document.getElementById('report-capture-area');
+            const grid = document.getElementById('responsive-grid-layout');
+            if (!wrapper || !grid) return;
 
             const targetName = generateFileName();
 
-            // Inject Strict Deterministic Printing Engine Stylesheets for Perfect Single-Page A4 Landscape Capture            wrapper.classList.add('pdf-strict-single-page');            grid.classList.add('pdf-strict-grid');
+            // Inject Strict Deterministic Printing Engine Stylesheets for Perfect Single-Page A4 Landscape Capture
+            wrapper.classList.add('pdf-strict-single-page');
+            grid.classList.add('pdf-strict-grid');
 
-            const options = {                margin: 0,                filename: targetName,                image: { type: 'jpeg', quality: 1.0 },                html2canvas: { scale: 2, useCORS: true, logging: false },                jsPDF: { unit: 'px', format: [1120, 790], orientation: 'landscape' }            };
+            const options = {
+                margin: 0,
+                filename: targetName,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'px', format: [1120, 790], orientation: 'landscape' }
+            };
 
-            html2pdf().set(options).from(wrapper).outputBlob()            .then((pdfBlob) => {                // Instantly remove layout mutators right after canvas rasterization completes                wrapper.classList.remove('pdf-strict-single-page');                grid.classList.remove('pdf-strict-grid');
+            html2pdf().set(options).from(wrapper).outputBlob()
+            .then((pdfBlob) => {
+                // Instantly remove layout mutators right after canvas rasterization completes
+                wrapper.classList.remove('pdf-strict-single-page');
+                grid.classList.remove('pdf-strict-grid');
 
                 const shareFile = new File([pdfBlob], targetName, { type: 'application/pdf' });
 
-                if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {                    navigator.share({                        files: [shareFile],                        title: 'Daily Cash Report',                        text: `Automated File Dispatch: ${targetName}`                    })                    .catch((err) => {                        console.warn("Share operation cancelled or dropped. Running fall-back stream:", err);                        triggerDirectDownloadStream(pdfBlob, targetName);                    });                } else {                    triggerDirectDownloadStream(pdfBlob, targetName);                }            })            .catch((err) => {                wrapper.classList.remove('pdf-strict-single-page');                grid.classList.remove('pdf-strict-grid');                console.error("Critical rendering exception caught inside html2pdf pipeline:", err);            });        }
+                if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+                    navigator.share({
+                        files: [shareFile],
+                        title: 'Daily Cash Report',
+                        text: `Automated File Dispatch: ${targetName}`
+                    })
+                    .catch((err) => {
+                        console.warn("Share operation cancelled or dropped. Running fall-back stream:", err);
+                        triggerDirectDownloadStream(pdfBlob, targetName);
+                    });
+                } else {
+                    triggerDirectDownloadStream(pdfBlob, targetName);
+                }
+            })
+            .catch((err) => {
+                wrapper.classList.remove('pdf-strict-single-page');
+                grid.classList.remove('pdf-strict-grid');
+                console.error("Critical rendering exception caught inside html2pdf pipeline:", err);
+            });
+        }
 
-        function triggerDirectDownloadStream(blob, filename) {            const a = document.createElement('a');            const url = URL.createObjectURL(blob);            a.href = url;            a.download = filename;            document.body.appendChild(a);            a.click();            document.body.removeChild(a);            window.URL.revokeObjectURL(url);        }    </script></body></html>
+        function triggerDirectDownloadStream(blob, filename) {
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
