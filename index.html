@@ -4,135 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Daily Cash Counter</title>
-    <!-- Tailwind CSS Engine -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Robust HTML-to-PDF Pipeline -->
+    <!-- html2pdf Bundle -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifWnQbPhysh36EHC836UXda9maErVQ97jd3u74k6vGRUu9cWP36ywMocr4xsev7ILyIbVCmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         input[type="number"] { -moz-appearance: textfield; }
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Deterministic Engine overrides for Document Processing */
-        .pdf-canvas-target {
-            width: 1040px !important;
-            max-width: 1040px !important;
-            padding: 24px !important;
+        /* Strict Single Page Landscape PDF Container Rules */
+        .pdf-strict-single-page {
+            width: 1120px !important;
+            max-width: 1120px !important;
+            min-height: 790px !important;
+            height: 790px !important;
+            padding: 32px !important;
             background-color: #ffffff !important;
-            border-radius: 0px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
         }
-        .pdf-grid-override {
+        .pdf-strict-grid {
             display: grid !important;
             grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
             gap: 1.5rem !important;
+            flex-grow: 1 !important;
+            align-items: start !important;
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans min-h-screen text-slate-800 antialiased pb-16">
+<body class="bg-slate-100 font-sans min-h-screen text-slate-900 antialiased pb-16">
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-6">
-        <!-- Main Application Structural Container -->
-        <div id="report-capture-area" class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-4 pt-6">
+        <!-- Capture Target Area -->
+        <div id="report-capture-area" class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden transition-all duration-300">
             
-            <!-- Global Header Node -->
-            <header class="bg-slate-900 p-5 sm:p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+            <!-- App Header -->
+            <header class="bg-slate-900 p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-center sm:text-left">
                     <h1 class="text-2xl font-black tracking-tight select-none">Daily Cash Counter</h1>
-                    <p class="text-xs text-slate-400 font-semibold tracking-wider uppercase mt-0.5">Petpooja & PhonePe Reconciliation System</p>
+                    <p class="text-xs text-slate-400 font-medium tracking-wider uppercase mt-1">Petpooja & PhonePe Reconciliation Sheet</p>
                 </div>
-                <!-- Chronological State Sync Input -->
-                <div class="flex items-center gap-2.5 bg-slate-800 px-4 py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start border border-slate-700/50">
-                    <span class="text-xs font-bold text-slate-300 uppercase tracking-widest">Transaction Date</span>
+                <!-- Date Synchronizer -->
+                <div class="flex items-center gap-3 bg-slate-800 px-4 py-2 rounded-xl w-full sm:w-auto justify-between sm:justify-start border border-slate-700">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-widest">Report Date:</span>
                     <input type="date" id="txnDate" class="bg-transparent border-none text-sm font-bold text-white focus:outline-hidden cursor-pointer scheme-dark">
                 </div>
             </header>
 
-            <!-- Adaptive Grid Matrix Component -->
-            <main id="responsive-grid-layout" class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Fully Fluid UI Grid -->
+            <main id="responsive-grid-layout" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- Section Module 1: Telemetry and External Point-Of-Sale Inputs -->
-                <section class="space-y-4">
+                <!-- Card Block 1: Sales Summary -->
+                <section class="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
                     <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">
-                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> 1. Sales Parameters
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> 1. Revenue Inputs
                     </h2>
                     
-                    <div class="space-y-3.5">
+                    <div class="space-y-4">
                         <div class="relative group">
-                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider transition-colors group-focus-within:text-blue-500">Gross System Sales (Petpooja)</label>
+                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Gross Sales (Petpooja)</label>
                             <span class="absolute left-3.5 top-3.5 font-bold text-slate-400 text-lg select-none">₹</span>
-                            <input type="number" id="petpoojaSales" value="0" min="0" step="any" autocomplete="off" class="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-slate-50/30 focus:bg-white focus:border-blue-500 focus:ring-3 focus:ring-blue-100 outline-hidden transition-all duration-150">
+                            <input type="number" id="petpoojaSales" value="0" min="0" step="any" class="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl font-bold text-lg text-slate-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-50 outline-hidden transition-all">
                         </div>
 
                         <div class="relative group">
-                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-purple-600 uppercase tracking-wider transition-colors group-focus-within:text-purple-600">Digital Aggregator Vault (PhonePe)</label>
+                            <label class="absolute -top-2 left-3 bg-white px-1.5 text-[10px] font-bold text-purple-600 uppercase tracking-wider">UPI Inflow (PhonePe)</label>
                             <span class="absolute left-3.5 top-3.5 font-bold text-purple-400 text-lg select-none">₹</span>
-                            <input type="number" id="phonepeUPI" value="0" min="0" step="any" autocomplete="off" class="w-full pl-8 pr-4 py-3 border border-purple-100 rounded-xl font-bold text-lg text-purple-900 bg-purple-50/10 focus:bg-white focus:border-purple-500 focus:ring-3 focus:ring-purple-100 outline-hidden transition-all duration-150">
+                            <input type="number" id="phonepeUPI" value="0" min="0" step="any" class="w-full pl-8 pr-4 py-3 border border-purple-200 rounded-xl font-bold text-lg text-purple-900 bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-50 outline-hidden transition-all">
                         </div>
 
-                        <!-- Derived Telemetry Node -->
-                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center shadow-xs">
+                        <!-- Derived Telemetry Row -->
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4 flex justify-between items-center shadow-xs">
                             <div>
-                                <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Calculated Cash Sales</p>
-                                <p class="text-[10px] text-emerald-600/80 font-medium">(Gross System Sales - UPI Inflow)</p>
+                                <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Expected Cash Sales</p>
+                                <p class="text-[10px] text-emerald-600/70 font-medium">(Sales minus UPI)</p>
                             </div>
                             <span id="derivedCashSales" class="text-xl font-black text-emerald-700 tracking-tight">₹0.00</span>
                         </div>
                     </div>
                 </section>
 
-                <!-- Section Module 2: High-Precision Physical Tender Inventory Matrix -->
-                <section>
-                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-3.5 flex items-center gap-2 select-none">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 2. Tender Denomination Audit
+                <!-- Card Block 2: Denomination Counter -->
+                <section class="bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
+                    <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 select-none">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 2. Physical Vault Count
                     </h2>
 
-                    <div id="denomTable" class="border border-slate-100 rounded-2xl overflow-hidden shadow-xs divide-y divide-slate-100 bg-white">
-                        <!-- Pure Functional Dynamic Injections Execute Here -->
+                    <div id="denomTable" class="border border-slate-200 rounded-xl overflow-hidden shadow-xs divide-y divide-slate-200 bg-white">
+                        <!-- Instantiated via JavaScript dynamic matrix layout -->
                     </div>
 
-                    <div class="mt-3.5 bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center shadow-md border border-slate-800">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 select-none">Sum-Total Hard Tender:</span>
-                        <span id="totalPhysicalCount" class="text-xl font-mono font-black text-yellow-400 tracking-wide">₹0.00</span>
+                    <div class="mt-4 bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center shadow-md border border-slate-800">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 select-none">Total Hand Cash:</span>
+                        <span id="totalPhysicalCount" class="text-xl font-mono font-black text-yellow-400">₹0.00</span>
                     </div>
                 </section>
 
-                <!-- Section Module 3: Variance Calculations and Operational Health Metrics -->
-                <section class="space-y-4">
+                <!-- Card Block 3: Calculation & Verdict -->
+                <section class="space-y-4 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
                     <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 select-none">
-                        <span class="w-2 h-2 rounded-full bg-slate-600"></span> 3. Final Reconciliation Balance
+                        <span class="w-2 h-2 rounded-full bg-slate-600"></span> 3. Reconciliation Diagnostics
                     </h2>
                     
-                    <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl space-y-3.5 shadow-xs">
+                    <div class="bg-white border border-slate-200 p-4 rounded-xl space-y-4 shadow-xs">
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="relative group">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Opening Balance</label>
-                                <input type="number" id="yesterdayCash" value="0" min="0" step="any" class="w-full px-3 py-2.5 border border-slate-200 bg-white rounded-xl font-bold text-slate-800 outline-hidden text-sm focus:border-slate-400 transition-colors">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Opening Cash</label>
+                                <input type="number" id="yesterdayCash" value="0" min="0" step="any" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-slate-800 outline-hidden text-sm focus:border-slate-400 transition-colors">
                             </div>
-                            <div class="relative group">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Store Payouts</label>
-                                <input type="number" id="storeExpenses" value="0" min="0" step="any" class="w-full px-3 py-2.5 border border-slate-200 bg-white rounded-xl font-bold text-rose-600 outline-hidden text-sm focus:border-rose-400 transition-colors">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 select-none">Daily Payouts</label>
+                                <input type="number" id="storeExpenses" value="0" min="0" step="any" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-rose-600 outline-hidden text-sm focus:border-rose-400 transition-colors">
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-slate-200/80 flex justify-between items-center">
-                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider select-none">Target Expected Ledger:</span>
+                        <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider select-none">Ledger Expected:</span>
                             <span id="targetExpectedCash" class="text-base font-black text-slate-900">₹0.00</span>
                         </div>
                     </div>
 
-                    <!-- Discrepancy Vector Output Frame -->
-                    <div id="variancePanel" class="p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs">
-                        <span class="text-xs font-extrabold uppercase tracking-widest select-none">Variance Delta (DIFF)</span>
-                        <span id="varianceDisplay" class="text-3xl font-black mt-1.5 tracking-tight">₹0.00</span>
+                    <!-- Dynamic Variance Feedback Deck -->
+                    <div id="variancePanel" class="p-6 rounded-xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs">
+                        <span class="text-xs font-extrabold uppercase tracking-widest select-none">Variance Status (DIFF)</span>
+                        <span id="varianceDisplay" class="text-3xl font-black mt-1 tracking-tight">₹0.00</span>
                     </div>
                 </section>
 
             </main>
         </div>
 
-        <!-- High-Reliability Action Trigger Node Panel -->
+        <!-- Action Control Trigger -->
         <div class="mt-6 max-w-xs mx-auto">
-            <button onclick="executeSecureExportSequence()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold p-4 rounded-2xl shadow-xl flex items-center justify-center space-x-2.5 transition-all cursor-pointer select-none">
+            <button onclick="processHighFidelityExport()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold p-4 rounded-2xl shadow-xl flex items-center justify-center space-x-2.5 transition-all cursor-pointer select-none">
                 <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 10.742a3 3 0 000 2.516m6.632-3.045a3 3 0 114.286 4.287 3 3 0 01-4.286-4.287zm-6.632 3.045a3 3 0 11-4.286-4.287 3 3 0 014.286 4.287z"></path>
                 </svg>
@@ -141,222 +148,186 @@
         </div>
     </div>
 
-    <!-- Core Cryptographic Execution Matrix Script -->
+    <!-- Core Pipeline Module Logic -->
     <script>
         "use strict";
 
-        // Global Configuration Dictionary
-        const TOKENS_VAULT_MAP = Object.freeze([500, 200, 100, 50, 20, 10, 5]);
+        const VAL_MAP = Object.freeze([500, 200, 100, 50, 20, 10, 5]);
 
-        // Lifecycle Entry Hook
         window.addEventListener('DOMContentLoaded', () => {
             try {
-                initializeTemporalState();
-                buildStructuralDenomMatrix();
-                registerGlobalInputInterceptors();
-                performFinancialReconciliation();
-            } catch (fatalInitializationError) {
-                console.error("Critical error inside Application Runtime Initialization Block:", fatalInitializationError);
+                const dateBox = document.getElementById('txnDate');
+                if (dateBox) {
+                    dateBox.valueAsDate = new Date();
+                    dateBox.addEventListener('change', runAccountingEngine);
+                }
+                buildDynamicDenomView();
+                bindSafetyInterceptors();
+                runAccountingEngine();
+            } catch (err) {
+                console.error("System Runtime Bootstrap Failure: ", err);
             }
         });
 
-        function initializeTemporalState() {
-            const dateSelector = document.getElementById('txnDate');
-            if (dateSelector) {
-                dateSelector.valueAsDate = new Date();
-                dateSelector.addEventListener('change', performFinancialReconciliation);
-            }
-        }
-
-        function buildStructuralDenomMatrix() {
-            const hostNode = document.getElementById('denomTable');
-            if (!hostNode) throw new Error("Target injection DOM node reference '#denomTable' is missing.");
+        function buildDynamicDenomView() {
+            const container = document.getElementById('denomTable');
+            if (!container) return;
+            container.innerHTML = '';
             
-            hostNode.innerHTML = '';
-            
-            TOKENS_VAULT_MAP.forEach(value => {
-                const rowFragment = document.createElement('div');
-                rowFragment.className = "flex items-center justify-between bg-slate-50/40 px-4 py-2 hover:bg-slate-50/80 transition-colors";
-                rowFragment.innerHTML = `
-                    <span class="w-16 text-xs font-black text-slate-600 tracking-wider">₹ ${value}</span>
-                    <div class="flex items-center gap-2">
+            VAL_MAP.forEach(denom => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between px-4 py-2 hover:bg-slate-50 transition-colors";
+                row.innerHTML = `
+                    <span class="w-16 text-xs font-black text-slate-600 tracking-wider">₹ ${denom}</span>
+                    <div class="flex items-center gap-1.5">
                         <span class="text-slate-400 text-[10px] font-bold select-none">×</span>
-                        <input type="number" id="input-${value}" value="0" min="0" autocomplete="off"
-                               class="w-16 text-center p-1.5 font-bold bg-white border border-slate-200 rounded-lg text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-50 text-xs shadow-xs transition-all outline-hidden">
+                        <input type="number" id="input-${denom}" value="0" min="0" autocomplete="off"
+                               class="w-16 text-center p-1 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-bold focus:bg-white focus:border-blue-500 text-xs transition-all outline-hidden">
                     </div>
-                    <span id="output-${value}" class="w-28 text-right font-mono font-bold text-slate-600 text-xs">₹0.00</span>
+                    <span id="output-${denom}" class="w-24 text-right font-mono font-bold text-slate-600 text-xs">₹0.00</span>
                 `;
-                hostNode.appendChild(rowFragment);
+                container.appendChild(row);
             });
         }
 
-        function registerGlobalInputInterceptors() {
-            // Intercept unwanted chars at keydown level across numeric vector fields
-            const targets = ['petpoojaSales', 'phonepeUPI', 'yesterdayCash', 'storeExpenses'];
-            TOKENS_VAULT_MAP.forEach(v => targets.push(`input-${v}`));
+        function bindSafetyInterceptors() {
+            const globalFields = ['petpoojaSales', 'phonepeUPI', 'yesterdayCash', 'storeExpenses'];
+            VAL_MAP.forEach(v => globalFields.push(`input-${v}`));
 
-            targets.forEach(id => {
-                const domNode = document.getElementById(id);
-                if (domNode) {
-                    domNode.addEventListener('keydown', (event) => {
-                        if (['-', '+', 'e', 'E'].includes(event.key)) {
-                            event.preventDefault();
-                        }
+            globalFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('keydown', (e) => {
+                        if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault();
                     });
-                    domNode.addEventListener('input', performFinancialReconciliation);
+                    el.addEventListener('input', runAccountingEngine);
                 }
             });
         }
 
-        function performFinancialReconciliation() {
+        function runAccountingEngine() {
             try {
-                const fetchSafeNumericValue = (elementId) => {
-                    const el = document.getElementById(elementId);
+                const readVal = (id) => {
+                    const el = document.getElementById(id);
                     if (!el) return 0;
-                    const parsed = parseFloat(el.value);
-                    return isNaN(parsed) || parsed < 0 ? 0 : parsed;
+                    const val = parseFloat(el.value);
+                    return isNaN(val) || val < 0 ? 0 : val;
                 };
 
-                const salesTotal = fetchSafeNumericValue('petpoojaSales');
-                const digitalUPIInflow = fetchSafeNumericValue('phonepeUPI');
-                const historicalOpening = fetchSafeNumericValue('yesterdayCash');
-                const operationalExpenses = fetchSafeNumericValue('storeExpenses');
+                const sales = readVal('petpoojaSales');
+                const upi = readVal('phonepeUPI');
+                const opening = readVal('yesterdayCash');
+                const payouts = readVal('storeExpenses');
 
-                // Derive Realized Base Cash Inflow
-                const rawCalculatedCashSales = salesTotal - digitalUPIInflow;
-                document.getElementById('derivedCashSales').innerText = "₹" + rawCalculatedCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const derivedCashSales = sales - upi;
+                document.getElementById('derivedCashSales').innerText = "₹" + derivedCashSales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-                // Accumulate Tender Denomination Vault Matrix
-                let localizedVaultAggregateSum = 0;
-                TOKENS_VAULT_MAP.forEach(denomination => {
-                    const countMultiplier = Math.floor(fetchSafeNumericValue(`input-${denomination}`));
-                    const computationalProduct = countMultiplier * denomination;
-                    
-                    const outputCell = document.getElementById(`output-${denomination}`);
-                    if (outputCell) {
-                        outputCell.innerText = "₹" + computationalProduct.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    }
-                    localizedVaultAggregateSum += computationalProduct;
+                let totalPhysicalSum = 0;
+                VAL_MAP.forEach(denom => {
+                    const count = Math.floor(readVal(`input-${denom}`));
+                    const product = count * denom;
+                    const outCell = document.getElementById(`output-${denom}`);
+                    if (outCell) outCell.innerText = "₹" + product.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    totalPhysicalSum += product;
                 });
+                document.getElementById('totalPhysicalCount').innerText = "₹" + totalPhysicalSum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-                document.getElementById('totalPhysicalCount').innerText = "₹" + localizedVaultAggregateSum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const expectedLedger = derivedCashSales + opening - payouts;
+                document.getElementById('targetExpectedCash').innerText = "₹" + expectedLedger.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-                // Process Mathematical Ledger Target
-                const calculatedLedgerTarget = rawCalculatedCashSales + historicalOpening - operationalExpenses;
-                document.getElementById('targetExpectedCash').innerText = "₹" + calculatedLedgerTarget.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const delta = expectedLedger - totalPhysicalSum;
+                updateUIVariancePanel(delta);
 
-                // Evaluate Global Accounting Deviation Matrix
-                const absoluteVarianceDelta = calculatedLedgerTarget - localizedVaultAggregateSum;
-                evaluateUIFeedbackState(absoluteVarianceDelta);
-                
-            } catch (runtimeCalculationException) {
-                console.error("Mathematical state processor caught anomaly:", runtimeCalculationException);
+            } catch (ex) {
+                console.error("Calculated engine anomaly suppressed:", ex);
             }
         }
 
-        function evaluateUIFeedbackState(varianceDelta) {
+        function updateUIVariancePanel(delta) {
             const panel = document.getElementById('variancePanel');
-            const numericalTextContainer = document.getElementById('varianceDisplay');
-            if (!panel || !numericalTextContainer) return;
+            const txt = document.getElementById('varianceDisplay');
+            if (!panel || !txt) return;
 
-            // Purge class allocations dynamically
-            panel.className = "p-6 rounded-2xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs";
+            panel.className = "p-6 rounded-xl border flex flex-col items-center text-center justify-center min-h-[120px] transition-all duration-300 shadow-xs";
 
-            // JavaScript decimal precision epsilon normalization boundary
-            if (Math.abs(varianceDelta) < 0.01) {
-                numericalTextContainer.innerText = "₹0.00";
+            if (Math.abs(delta) < 0.01) {
+                txt.innerText = "₹0.00";
                 panel.classList.add("bg-slate-50", "border-slate-200", "text-slate-700");
-            } else if (varianceDelta < 0) {
-                // Cash Surplus Scenario
-                numericalTextContainer.innerText = "Surplus: ₹" + Math.abs(varianceDelta).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } else if (delta < 0) {
+                txt.innerText = "Surplus: ₹" + Math.abs(delta).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 panel.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-700");
             } else {
-                // Deficit Shortage Scenario
-                numericalTextContainer.innerText = "Shortage: ₹" + varianceDelta.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                txt.innerText = "Shortage: ₹" + delta.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 panel.classList.add("bg-rose-50", "border-rose-200", "text-rose-600");
             }
         }
 
-        function computeTargetIdentifierString() {
-            const specifiedDateStr = document.getElementById('txnDate').value;
-            if (specifiedDateStr) {
-                const [yyyy, mm, dd] = specifiedDateStr.split('-');
-                return `daily_cash_counter_${dd}-${mm}-${yyyy}`;
+        function generateFileName() {
+            const dateStr = document.getElementById('txnDate').value;
+            if (dateStr) {
+                const [yyyy, mm, dd] = dateStr.split('-');
+                return `daily_cash_counter_${dd}-${mm}-${yyyy}.pdf`;
             }
-            return "daily_cash_counter_compiled_report";
+            return "daily_cash_counter_report.pdf";
         }
 
-        function executeSecureExportSequence() {
-            const rootCaptureBox = document.getElementById('report-capture-area');
-            const targetGridLayout = document.getElementById('responsive-grid-layout');
-            
-            if (!rootCaptureBox || !targetGridLayout) {
-                alert("Runtime Exception: Required DOM elements could not be referenced.");
-                return;
-            }
+        function processHighFidelityExport() {
+            const wrapper = document.getElementById('report-capture-area');
+            const grid = document.getElementById('responsive-grid-layout');
+            if (!wrapper || !grid) return;
 
-            const generatedFileName = computeTargetIdentifierString() + ".pdf";
+            const targetName = generateFileName();
 
-            // Inject Immutable Engine Mutators for High Fidelity Canvas Rendering
-            rootCaptureBox.classList.add('pdf-canvas-target');
-            targetGridLayout.classList.add('pdf-grid-override');
+            // Inject Strict Deterministic Printing Engine Stylesheets for Perfect Single-Page A4 Landscape Capture
+            wrapper.classList.add('pdf-strict-single-page');
+            grid.classList.add('pdf-strict-grid');
 
-            const deploymentConfiguration = {
-                margin: 0.15,
-                filename: generatedFileName,
+            const options = {
+                margin: 0,
+                filename: targetName,
                 image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'px', format: [1120, 790], orientation: 'landscape' }
             };
 
-            // Instantiate Asynchronous Canvas Conversion Stream
-            html2pdf().set(deploymentConfiguration).from(rootCaptureBox).outputBlob()
-            .then((binaryBlobInstance) => {
-                // Instantly strip canvas overrides to preserve screen styling structure
-                rootCaptureBox.classList.remove('pdf-canvas-target');
-                targetGridLayout.classList.remove('pdf-grid-override');
+            html2pdf().set(options).from(wrapper).outputBlob()
+            .then((pdfBlob) => {
+                // Instantly remove layout mutators right after canvas rasterization completes
+                wrapper.classList.remove('pdf-strict-single-page');
+                grid.classList.remove('pdf-strict-grid');
 
-                const runtimeSharedFileObject = new File([binaryBlobInstance], generatedFileName, { type: 'application/pdf' });
+                const shareFile = new File([pdfBlob], targetName, { type: 'application/pdf' });
 
-                // Assess Native Transport Share API capabilities for direct WhatsApp transmission
-                if (navigator.canShare && navigator.canShare({ files: [runtimeSharedFileObject] })) {
+                if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
                     navigator.share({
-                        files: [runtimeSharedFileObject],
-                        title: 'Daily Cash Reconciliation Report',
-                        text: `Automated Ledger Export File: ${generatedFileName}`
+                        files: [shareFile],
+                        title: 'Daily Cash Report',
+                        text: `Automated File Dispatch: ${targetName}`
                     })
-                    .then(() => console.log("Blob transport packet dispatched successfully to system sharing node."))
-                    .catch((apiSharingRejection) => {
-                        console.warn("User aborted system sheet or subsystem constraint hit, handling fallback download sequence:", apiSharingRejection);
-                        executeLocalDownloadFallback(binaryBlobInstance, generatedFileName);
+                    .catch((err) => {
+                        console.warn("Share operation cancelled or dropped. Running fall-back stream:", err);
+                        triggerDirectDownloadStream(pdfBlob, targetName);
                     });
                 } else {
-                    // Fail-safe Architecture for Desktop PCs or Legacy Browser Systems
-                    executeLocalDownloadFallback(binaryBlobInstance, generatedFileName);
+                    triggerDirectDownloadStream(pdfBlob, targetName);
                 }
             })
-            .catch((criticalPipelineException) => {
-                // Ensure layout returns to state on exception throw
-                rootCaptureBox.classList.remove('pdf-canvas-target');
-                targetGridLayout.classList.remove('pdf-grid-override');
-                console.error("Structural PDF Pipeline caught critical error execution block exception:", criticalPipelineException);
-                alert("An internal exception occurred during rendering. Details logged to engineering stack trace.");
+            .catch((err) => {
+                wrapper.classList.remove('pdf-strict-single-page');
+                grid.classList.remove('pdf-strict-grid');
+                console.error("Critical rendering exception caught inside html2pdf pipeline:", err);
             });
         }
 
-        function executeLocalDownloadFallback(blobSource, targetedOutputName) {
-            const anchorElement = document.createElement('a');
-            const structuralObjectUrl = URL.createObjectURL(blobSource);
-            
-            anchorElement.href = structuralObjectUrl;
-            anchorElement.download = targetedOutputName;
-            document.body.appendChild(anchorElement);
-            
-            anchorElement.click();
-            
-            // Clean dynamic structures instantly out of virtual DOM tree context to prevent leaks
-            document.body.removeChild(anchorElement);
-            window.URL.revokeObjectURL(structuralObjectUrl);
+        function triggerDirectDownloadStream(blob, filename) {
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
         }
     </script>
 </body>
